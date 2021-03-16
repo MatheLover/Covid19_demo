@@ -1,3 +1,6 @@
+import time
+from math import pi
+
 from django.shortcuts import render
 
 from datetime import datetime
@@ -15,7 +18,8 @@ def query(request):
 
         start_date = request.GET.get("start_date")
         start_date_list = start_date.split("-")
-        selected_start_date = datetime.datetime(int(start_date_list[0]), int(start_date_list[1]), int(start_date_list[2]))
+        selected_start_date = datetime.datetime(int(start_date_list[0]), int(start_date_list[1]),
+                                                int(start_date_list[2]))
 
         end_date = request.GET.get("end_date")
         end_date_list = end_date.split("-")
@@ -59,30 +63,85 @@ def query(request):
                 j += 1
 
 
-        print(len(date_list))
-        print(len(cases_list))
-        print(date_list[0])
-        print(date_list[1])
+        print(date_list[0].split("-"))
 
+        # Reformat the dates for plotting
+        graph_date_list = []
+        for x in range(len(date_list)):
+            reformatted_date_list = date_list[x].split("-")
+            if reformatted_date_list[0] == "2020":
+                if reformatted_date_list[1] == "01":
+                    graph_date_list.append("2020/01")
+                elif reformatted_date_list[1] == "02":
+                    graph_date_list.append("2020/02")
+                elif reformatted_date_list[1] == "03":
+                    graph_date_list.append("2020/03")
+                elif reformatted_date_list[1] == "04":
+                    graph_date_list.append("2020/04")
+                elif reformatted_date_list[1] == "05":
+                    graph_date_list.append("2020/05")
+                elif reformatted_date_list[1] == "06":
+                    graph_date_list.append("2020/06")
+                elif reformatted_date_list[1] == "07":
+                    graph_date_list.append("2020/07")
+                elif reformatted_date_list[1] == "08":
+                    graph_date_list.append("2020/08")
+                elif reformatted_date_list[1] == "09":
+                    graph_date_list.append("2020/09")
+                elif reformatted_date_list[1] == "10":
+                    graph_date_list.append("2020/10")
+                elif reformatted_date_list[1] == "11":
+                    graph_date_list.append("2020/11")
+                elif reformatted_date_list[1] == "12":
+                    graph_date_list.append("2020/12")
+
+            else:
+                if reformatted_date_list[1] == "01":
+                    graph_date_list.append("2021/01")
+                elif reformatted_date_list[1] == "02":
+                    graph_date_list.append("2021/02")
+                elif reformatted_date_list[1] == "03":
+                    graph_date_list.append("2021/03")
+                elif reformatted_date_list[1] == "04":
+                    graph_date_list.append("2021/04")
+                elif reformatted_date_list[1] == "05":
+                    graph_date_list.append("2021/05")
+                elif reformatted_date_list[1] == "06":
+                    graph_date_list.append("2021/06")
+                elif reformatted_date_list[1] == "07":
+                    graph_date_list.append("2021/07")
+                elif reformatted_date_list[1] == "08":
+                    graph_date_list.append("2021/08")
+                elif reformatted_date_list[1] == "09":
+                    graph_date_list.append("2021/09")
+                elif reformatted_date_list[1] == "10":
+                    graph_date_list.append("2021/10")
+                elif reformatted_date_list[1] == "11":
+                    graph_date_list.append("2021/11")
+                elif reformatted_date_list[1] == "12":
+                    graph_date_list.append("2021/12")
 
         # Plot the graph of total cases
-        month_list = ["January","February","March","April","May","June","July","August","September", "October", "December"]
+        month_list = ["2020/01", "2020/02", "2020/03", "2020/04", "2020/05", "2020/06", "2020/07",
+                      "2020/08", "2020/09", "2020/10", "2020/11", "2020/12",
+                      "2021/01","2021/02", "2021/03", "2021/04"]
         plot2 = figure(title="Number of Total cases from " + start_date + " to " + end_date,
                        x_range=month_list,
-                       plot_width=800,
-                       plot_height=400)
+                       plot_width=1000,
+                       plot_height=600)
+
         plot2.left[0].formatter.use_scientific = False
-        plot2.vbar(date_list, width=0.5, bottom=0, top=cases_list, color="firebrick")
-        #plot2.line(date_list, cases_list, line_width=2)
+
+        plot2.line(graph_date_list, cases_list, line_width=2)
         script2, div2 = components(plot2)
 
         # Plot the number of total deaths
         plot3 = figure(title="Number of Total Deaths from " + start_date + " to " + end_date,
-                       x_range=date_list,
+                       x_range=month_list,
                        plot_width=800, plot_height=400)
         plot3.left[0].formatter.use_scientific = False
-        #plot3.line(date_list, deaths_list, line_width=2)
-        plot3.vbar(date_list, width=0.5, bottom=0, top=deaths_list, color="firebrick")
+        #lot3.line(graph_date_list, deaths_list, line_width=2)
+        plot3.vbar(graph_date_list, width=0.5, bottom=0, top=deaths_list, color="firebrick")
         script3, div3 = components(plot3)
 
         context = {'Covid19': query_result, 'script2': script2, 'div2': div2, 'script3': script3, 'div3': div3}
