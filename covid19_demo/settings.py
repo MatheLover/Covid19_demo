@@ -117,6 +117,8 @@ USE_TZ = True
 
 IMPORT_EXPORT_USE_TRANSACTIONS = True
 
+# # to disable the check
+# DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
