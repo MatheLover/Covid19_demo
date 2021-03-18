@@ -148,3 +148,21 @@ def query(request):
         return render(request, 'covid19/query.html', context)
 
     return render(request, 'covid19/query.html')
+
+def about(request):
+    return render(request, 'covid19/about.html')
+
+def covid19_map(request):
+    return render(request, 'covid19/covid19_map.html')
+
+def covid19_public_health_authority_response(request):
+    return render(request, 'covid19/covid19_public_health_authority_response.html')
+
+def covid19_public_health_facility(request):
+    return render(request, 'covid19/covid19_public_health_facility.html')
+
+def covid19_public_health_statistics(request):
+    return render(request, 'covid19/covid19_public_health_statistics.html')
+
+def covid19_socioeconomic_factor(request):
+    return render(request, 'covid19/covid19_socioeconomic_factor.html')
