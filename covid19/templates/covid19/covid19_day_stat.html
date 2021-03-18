@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Covid19 Home page</title>
+    <title>Covid19 Daily Statistics</title>
 
     <!-- Bootstrap CSS file -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
@@ -34,7 +34,7 @@
 
         </div>
         <h1>Please Use the selector to do a query</h1>
-        <form name="filter" action="{% url 'query' %}" method="get">
+        <form name="filter" action="{% url 'day_stat_map' %}" method="get">
             <select id="Location" name="Location">
                 <option disabled="true" selected>Select one country or region</option>
                 <option value="World">World</option>
@@ -285,13 +285,9 @@
                 <option value="Zambia">Zambia</option>
                 <option value="Zimbabwe">Zimbabwe</option>
             </select>
-            <label for="start_date">Start Date(at least from 2020-01-01):</label>
+            <label for="start_date">Date</label>
             <input type="date" id="start_date" name="start_date"
-                   min="2020-01-01" max="2021-1-1">
-
-            <label for="end_date">End Date(til 2021-01-01):</label>
-            <input type="date" id="end_date" name="end_date"
-                   min="2020-01-01" max="2021-1-1">
+                   min="2020-01-01" max="2021-3-15">
 
             <br><br>
             <input type="submit" value="Submit Query"/>
@@ -318,15 +314,6 @@
         <br>
         <br>
         {{div3| safe}}
-        <br>
-        <br>
-        {{div4| safe}}
-        <br>
-        <br>
-        {{div5| safe}}
-        <br>
-        <br>
-        {{div6| safe}}
 
     </center>
     <!-- JS files: jQuery first, then Popper.js, then Bootstrap JS -->
@@ -341,7 +328,4 @@
 <script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-api-2.2.3.min.js"></script>
 {{script2 | safe}}
 {{script3 | safe}}
-{{script4 | safe}}
-{{script5 | safe}}
-{{script6 | safe}}
 </html>

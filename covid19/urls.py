@@ -13,5 +13,9 @@ urlpatterns = [
     path('covid19_public_health_statistics.html', views.covid19_public_health_statistics,
          name='covid19_public_health_statistics'),
     path('covid19_socioeconomic_factor.html', views.covid19_socioeconomic_factor,
-         name='covid19_socioeconomic_factor')
+         name='covid19_socioeconomic_factor'),
+    path('covid19_day_stat.html', views.covid19_day_stat,
+         name='covid19_day_stat'),
+    path('covid19_day_stat_map.html', views.covid19_day_stat_map,
+         name='covid19_day_stat_map')
 ]
