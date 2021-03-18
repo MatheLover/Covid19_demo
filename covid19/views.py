@@ -243,19 +243,21 @@ def covid19_day_stat_map(request):
 
         map_demo = folium.Map(min_zoom=2, max_bounds=True, tiles='cartodbpositron')
 
-        # for co in zipped_combined:
-        #     html = """Country: """ + co[2] \
-        #            + """<br>Case Number in """ + str(co[6]) + """: """ + str(co[3]) \
-        #            + """<br>Deaths """ + str(co[6]) + """: """ + str(co[4]) \
-        #            + """<br>Population at risk """ + str(co[6]) + """: """ + str(co[5])
-        #
-        #     iframe = folium.IFrame(html,
-        #                            width=400,
-        #                            height=100)
-        #
-        #     popup = folium.Popup(iframe,
-        #                          max_width=500)
-        #     folium.Marker(location=[co[0], co[1]], popup=popup).add_to(map_demo)
+        for co in zipped_combined:
+            html = """Country: """ + co[7] \
+                   + """<br>Case Number in """ + str(co[7]) + """: """ + str(co[0]) \
+                   + """<br>Deaths """ + str(co[7]) + """: """ + str(co[1]) \
+                   + """<br>Reproduction rate """ + str(co[7]) + """: """ + str(co[2]) \
+                   + """<br>Number of ICU patients """ + str(co[7]) + """: """ + str(co[3]) \
+                   + """<br>Number of hospitalized patients """ + str(co[7]) + """: """ + str(co[4])
+
+            iframe = folium.IFrame(html,
+                                   width=400,
+                                   height=200)
+
+            popup = folium.Popup(iframe,
+                                 max_width=500)
+            folium.Marker(location=[co[5], co[6]], popup=popup).add_to(map_demo)
 
         map_demo.save("covid19/covid19_day_stat_map.html")
         map_demo = map_demo._repr_html_()
