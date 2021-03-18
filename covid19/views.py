@@ -11,6 +11,8 @@ from django.db.models import Q
 from bokeh.embed import components
 from bokeh.plotting import figure
 
+import folium
+
 
 def query(request):
     if request.GET.get("Location") and request.GET.get("start_date") and request.GET.get("end_date"):
@@ -165,7 +167,6 @@ def query(request):
         plot3.vbar(graph_date_list, width=0.5, bottom=0, top=deaths_list, color="firebrick")
         script3, div3 = components(plot3)
 
-
         # Plot reproduction Rate of covid 19
         plot4 = figure(title="Reproduction Rate of COVID 19 from " + start_date + " to " + end_date,
                        x_range=month_list,
@@ -185,14 +186,14 @@ def query(request):
         script5, div5 = components(plot5)
 
         # Plot number of COVID 19 patients admitted into hospitals
-        plot6 = figure(title="Number of COVID 19 Patients Admitted into hospitals from " + start_date + " to " + end_date,
-                       x_range=month_list,
-                       plot_width=800, plot_height=400)
+        plot6 = figure(
+            title="Number of COVID 19 Patients Admitted into hospitals from " + start_date + " to " + end_date,
+            x_range=month_list,
+            plot_width=800, plot_height=400)
         plot6.left[0].formatter.use_scientific = False
         # lot3.line(graph_date_list, deaths_list, line_width=2)
         plot6.vbar(graph_date_list, width=0.5, bottom=0, top=rep_list, color="firebrick")
         script6, div6 = components(plot6)
-
 
         context = {'Covid19': query_result, 'script2': script2, 'div2': div2, 'script3': script3, 'div3': div3,
                    'script4': script4, 'div4': div4, 'script5': script5, 'div5': div5,
@@ -209,17 +210,65 @@ def about(request):
 def covid19_map(request):
     return render(request, 'covid19/covid19_map.html')
 
-
 def covid19_day_stat(request):
-    if request.GET.get("location") and request.GET.get("start_date"):
+    return render(request, 'covid19/covid19_day_stat.html')
+
+def covid19_day_stat_map(request):
+    if request.GET.get("Location") and request.GET.get("start_date"):
         location_filter = request.GET.get("Location")
         start_date = request.GET.get("start_date")
         query_result = Covid19.objects.filter(Q(location=location_filter) & Q(date=start_date))
-    return render(request, 'covid19/covid19_day_stat.html')
 
+        cases_list = []
+        deaths_list = []
+        rep_list = []
+        icu_list = []
+        hosp_list = []
+        lat_list = []
+        lon_list = []
+        name_list = []
 
-def covid19_day_stat_map(request):
+        for q in query_result:
+            lat_list.append(q.Latitude)
+            lon_list.append(q.Longitude)
+            name_list.append(q.location)
+            cases_list.append(q.total_cases)
+            deaths_list.append(q.total_deaths)
+            rep_list.append(q.reproduction_rate)
+            icu_list.append(q.icu_patients)
+            hosp_list.append(q.hosp_patients)
+
+        combined = zip(cases_list, deaths_list, rep_list, icu_list, hosp_list, lat_list, lon_list, name_list)
+        zipped_combined = list(combined)
+
+        map_demo = folium.Map(min_zoom=2, max_bounds=True, tiles='cartodbpositron')
+
+        # for co in zipped_combined:
+        #     html = """Country: """ + co[2] \
+        #            + """<br>Case Number in """ + str(co[6]) + """: """ + str(co[3]) \
+        #            + """<br>Deaths """ + str(co[6]) + """: """ + str(co[4]) \
+        #            + """<br>Population at risk """ + str(co[6]) + """: """ + str(co[5])
+        #
+        #     iframe = folium.IFrame(html,
+        #                            width=400,
+        #                            height=100)
+        #
+        #     popup = folium.Popup(iframe,
+        #                          max_width=500)
+        #     folium.Marker(location=[co[0], co[1]], popup=popup).add_to(map_demo)
+
+        map_demo.save("covid19/covid19_day_stat_map.html")
+        map_demo = map_demo._repr_html_()
+        context = {
+            'map_demo': map_demo
+        }
+
+        return render(request, 'covid19/covid19_day_stat_map.html', context)
+
     return render(request, 'covid19/covid19_day_stat_map.html')
+
+
+
 
 
 def covid19_public_health_authority_response(request):
