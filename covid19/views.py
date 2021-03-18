@@ -128,11 +128,12 @@ def query(request):
         plot2 = figure(title="Number of Total cases from " + start_date + " to " + end_date,
                        x_range=month_list,
                        plot_width=1000,
-                       plot_height=600)
+                       plot_height=400)
 
+        plot2.vbar(graph_date_list, width=0.5, bottom=0, top=cases_list, color="firebrick")
         plot2.left[0].formatter.use_scientific = False
 
-        plot2.line(graph_date_list, cases_list, line_width=2)
+        #plot2.line(graph_date_list, cases_list, line_width=2)
         script2, div2 = components(plot2)
 
         # Plot the number of total deaths
