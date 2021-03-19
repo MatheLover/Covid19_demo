@@ -214,10 +214,11 @@ def covid19_day_stat(request):
     return render(request, 'covid19/covid19_day_stat.html')
 
 def covid19_day_stat_map(request):
-    if request.GET.get("Location") and request.GET.get("start_date"):
+    if (request.GET.get("Location") != "World") and request.GET.get("start_date"):
         location_filter = request.GET.get("Location")
         start_date = request.GET.get("start_date")
         query_result = Covid19.objects.filter(Q(location=location_filter) & Q(date=start_date))
+
 
         cases_list = []
         deaths_list = []
@@ -243,13 +244,15 @@ def covid19_day_stat_map(request):
 
         map_demo = folium.Map(min_zoom=2, max_bounds=True, tiles='cartodbpositron')
 
+
         for co in zipped_combined:
             html = """Country: """ + co[7] \
-                   + """<br>Case Number in """ + str(co[7]) + """: """ + str(co[0]) \
-                   + """<br>Deaths """ + str(co[7]) + """: """ + str(co[1]) \
-                   + """<br>Reproduction rate """ + str(co[7]) + """: """ + str(co[2]) \
-                   + """<br>Number of ICU patients """ + str(co[7]) + """: """ + str(co[3]) \
-                   + """<br>Number of hospitalized patients """ + str(co[7]) + """: """ + str(co[4])
+                   + """<br>Date: """ + start_date \
+                   + """<br>Case Number: """ + str(co[0]) \
+                   + """<br>Deaths on: """ + str(co[1]) \
+                   + """<br>Reproduction rate: """ + str(co[2]) \
+                   + """<br>Number of ICU patients: """ + str(co[3]) \
+                   + """<br>Number of hospitalized patients: """ + str(co[4])
 
             iframe = folium.IFrame(html,
                                    width=400,
@@ -258,6 +261,64 @@ def covid19_day_stat_map(request):
             popup = folium.Popup(iframe,
                                  max_width=500)
             folium.Marker(location=[co[5], co[6]], popup=popup).add_to(map_demo)
+
+        map_demo.save("covid19/covid19_day_stat_map.html")
+        map_demo = map_demo._repr_html_()
+        context = {
+            'map_demo': map_demo
+        }
+
+        return render(request, 'covid19/covid19_day_stat_map.html', context)
+
+    elif (request.GET.get("Location") == "World") and request.GET.get("start_date"):
+        start_date = request.GET.get("start_date")
+        query_result = Covid19.objects.filter(date=start_date)
+
+        query_result = query_result.exclude( location="World").exclude(location="North America").exclude(location="European Union").exclude(location="Asia").exclude(location="South America").exclude(location="Oceania").exclude(location="Africa").exclude(location="Georgia").exclude(location="Chad").exclude(location="Jordan")
+
+        cases_list = []
+        deaths_list = []
+        rep_list = []
+        icu_list = []
+        hosp_list = []
+        lat_list = []
+        lon_list = []
+        name_list = []
+
+        for q in query_result:
+            lat_list.append(q.Latitude)
+            lon_list.append(q.Longitude)
+            name_list.append(q.location)
+            cases_list.append(q.total_cases)
+            deaths_list.append(q.total_deaths)
+            rep_list.append(q.reproduction_rate)
+            icu_list.append(q.icu_patients)
+            hosp_list.append(q.hosp_patients)
+
+
+        combined = zip(cases_list, deaths_list, rep_list, icu_list, hosp_list, lat_list, lon_list, name_list)
+        zipped_combined = list(combined)
+        featured_Group = folium.FeatureGroup(name="COVID 19 Map")
+        map_demo = folium.Map(min_zoom=2, max_bounds=True, tiles='cartodbpositron')
+
+        for co in zipped_combined:
+            html = """Country: """ + co[7] \
+                   + """<br>Date: """ + start_date \
+                   + """<br>Case Number: """ + str(co[0]) \
+                   + """<br>Deaths on: """ + str(co[1]) \
+                   + """<br>Reproduction rate: """ + str(co[2]) \
+                   + """<br>Number of ICU patients: """ + str(co[3]) \
+                   + """<br>Number of hospitalized patients: """ + str(co[4])
+
+            iframe = folium.IFrame(html,
+                                   width=400,
+                                   height=200)
+
+            popup = folium.Popup(iframe,
+                                 max_width=500)
+            #folium.Marker(location=[co[5], co[6]], popup=popup).add_to(map_demo)
+            featured_Group.add_child(folium.Marker(location=[co[5], co[6]], popup=popup))
+        map_demo.add_child(featured_Group)
 
         map_demo.save("covid19/covid19_day_stat_map.html")
         map_demo = map_demo._repr_html_()
