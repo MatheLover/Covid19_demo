@@ -21,5 +21,9 @@ urlpatterns = [
     path('covid19_cum_stat.html', views.covid19_cum_stat,
          name='covid19_cum_stat'),
     path('covid19_cum_stat_map.html', views.covid19_cum_stat_map,
-         name='covid19_cum_stat_map')
+         name='covid19_cum_stat_map'),
+    path('covid19_public_health_test_stat.html', views.covid19_public_health_test_stat,
+         name='covid19_public_health_test_stat'),
+    path('covid19_public_health_vac_stat.html', views.covid19_public_health_vac_stat,
+         name='covid19_public_health_vac_stat'),
 ]

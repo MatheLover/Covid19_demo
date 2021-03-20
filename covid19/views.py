@@ -2,6 +2,7 @@ import decimal
 import time
 from math import pi
 
+import pandas
 from django.shortcuts import render
 
 from datetime import datetime
@@ -215,15 +216,16 @@ def about(request):
 def covid19_map(request):
     return render(request, 'covid19/covid19_map.html')
 
+
 def covid19_day_stat(request):
     return render(request, 'covid19/covid19_day_stat.html')
+
 
 def covid19_day_stat_map(request):
     if (request.GET.get("Location") != "World") and request.GET.get("start_date"):
         location_filter = request.GET.get("Location")
         start_date = request.GET.get("start_date")
         query_result = Covid19.objects.filter(Q(location=location_filter) & Q(date=start_date))
-
 
         cases_list = []
         deaths_list = []
@@ -248,7 +250,6 @@ def covid19_day_stat_map(request):
         zipped_combined = list(combined)
 
         map_demo = folium.Map(min_zoom=2, max_bounds=True, tiles='cartodbpositron')
-
 
         for co in zipped_combined:
             html = """Country: """ + co[7] \
@@ -279,7 +280,10 @@ def covid19_day_stat_map(request):
         start_date = request.GET.get("start_date")
         query_result = Covid19.objects.filter(date=start_date)
 
-        query_result = query_result.exclude( location="World").exclude(location="North America").exclude(location="European Union").exclude(location="Asia").exclude(location="South America").exclude(location="Oceania").exclude(location="Africa").exclude(location="Georgia").exclude(location="Chad").exclude(location="Jordan")
+        query_result = query_result.exclude(location="World").exclude(location="North America").exclude(
+            location="European Union").exclude(location="Asia").exclude(location="South America").exclude(
+            location="Oceania").exclude(location="Africa").exclude(location="Georgia").exclude(location="Chad").exclude(
+            location="Jordan")
 
         cases_list = []
         deaths_list = []
@@ -299,7 +303,6 @@ def covid19_day_stat_map(request):
             rep_list.append(q.reproduction_rate)
             icu_list.append(q.icu_patients)
             hosp_list.append(q.hosp_patients)
-
 
         combined = zip(cases_list, deaths_list, rep_list, icu_list, hosp_list, lat_list, lon_list, name_list)
         zipped_combined = list(combined)
@@ -321,7 +324,7 @@ def covid19_day_stat_map(request):
 
             popup = folium.Popup(iframe,
                                  max_width=500)
-            #folium.Marker(location=[co[5], co[6]], popup=popup).add_to(map_demo)
+            # folium.Marker(location=[co[5], co[6]], popup=popup).add_to(map_demo)
             featured_Group.add_child(folium.Marker(location=[co[5], co[6]], popup=popup))
         map_demo.add_child(featured_Group)
 
@@ -339,6 +342,7 @@ def covid19_day_stat_map(request):
 def covid19_cum_stat(request):
     return render(request, 'covid19/covid19_cum_stat.html')
 
+
 def covid19_cum_stat_map(request):
     obtained_feature = request.GET.get("feature")
     date = request.GET.get("start_date")
@@ -354,7 +358,10 @@ def covid19_cum_stat_map(request):
 
     if obtained_feature == "total_cases":
         result = Covid19.objects.filter(date__gte=date)
-        result = result.exclude( location="World").exclude(location="North America").exclude(location="European Union").exclude(location="Asia").exclude(location="South America").exclude(location="Oceania").exclude(location="Africa").exclude(location="Georgia").exclude(location="Chad").exclude(location="Jordan")
+        result = result.exclude(location="World").exclude(location="North America").exclude(
+            location="European Union").exclude(location="Asia").exclude(location="South America").exclude(
+            location="Oceania").exclude(location="Africa").exclude(location="Georgia").exclude(location="Chad").exclude(
+            location="Jordan")
         for m in result:
             slider_name_list.append(m.location)
             slider_case_list.append(m.total_cases)
@@ -376,7 +383,7 @@ def covid19_cum_stat_map(request):
 
         # Change country name
         country = country.replace({'ADMIN': 'United States of America'},
-                                      'United States')
+                                  'United States')
         country = country.rename(columns={'ADMIN': 'location'})
         combined_df = sorted_df.merge(country, on='location')
 
@@ -464,7 +471,7 @@ def covid19_cum_stat_map(request):
         combined_df = sorted_df.merge(country, on='location')
 
         # Use Log to plot the cases
-        #combined_df['log_total_cases'] = np.log10(combined_df['total_deaths'])
+        # combined_df['log_total_cases'] = np.log10(combined_df['total_deaths'])
         combined_df = combined_df[['location', 'total_deaths', 'date', 'geometry']]
 
         combined_df['date'] = pd.to_datetime(combined_df['date']).astype(int) / 10 ** 9
@@ -764,8 +771,173 @@ def covid19_cum_stat_map(request):
 
     return render(request, 'covid19/covid19_cum_stat_map.html')
 
+
 def covid19_public_health_authority_response(request):
     return render(request, 'covid19/covid19_public_health_authority_response.html')
+
+
+def covid19_public_health_test_stat(request):
+    if request.GET.get("Location") and request.GET.get("start_date") and request.GET.get("end_date"):
+        country_filter = request.GET.get("Location")
+        date_filter = request.GET.get("start_date")
+        end_date_filter = request.GET.get("end_date")
+        processed_date_list = date_filter.split("-")
+        end_processed_date_list = end_date_filter.split("-")
+        date_ready = datetime.datetime(int(processed_date_list[0]), int(processed_date_list[1]),
+                                       int(processed_date_list[2]))
+        end_date_ready = datetime.datetime(int(end_processed_date_list[0]), int(end_processed_date_list[1]),
+                                           int(end_processed_date_list[2]))
+        query_result = Covid19.objects.filter(Q(location=country_filter) & Q(date__gte=date_filter))
+
+        cases_list = []
+        test_list = []
+        name_list = []
+
+        # Create a list to hold the dates that have been included
+        date_list = []
+        dayIncrement = datetime.timedelta(days=1)
+        counter = 0
+
+        # Find out the actual starting date in the database for that country
+        while Covid19.objects.filter(Q(location=country_filter)
+                                     & Q(date=date_ready)).exists() is False:
+            date_ready += dayIncrement
+
+        index = date_ready
+
+        # Prepare date list
+        while index <= end_date_ready:
+            date_list.append(date_ready.isoformat())
+            date_ready += dayIncrement
+            index += dayIncrement
+            counter += 1
+
+        # Prepare tests and cases stats
+        i = 0
+        j = 0
+        for cases in query_result.values_list('total_cases'):
+            if i <= counter:
+                cases_list.append(cases)
+                i += 1
+
+        for test in query_result.values_list('total_tests'):
+            if j <= counter:
+                test_list.append(test)
+                j += 1
+
+        # Reformat the dates for plotting
+        graph_date_list = []
+        for x in range(len(date_list)):
+            reformatted_date_list = date_list[x].split("-")
+            if reformatted_date_list[0] == "2020":
+                if reformatted_date_list[1] == "01":
+                    graph_date_list.append("2020/01")
+                elif reformatted_date_list[1] == "02":
+                    graph_date_list.append("2020/02")
+                elif reformatted_date_list[1] == "03":
+                    graph_date_list.append("2020/03")
+                elif reformatted_date_list[1] == "04":
+                    graph_date_list.append("2020/04")
+                elif reformatted_date_list[1] == "05":
+                    graph_date_list.append("2020/05")
+                elif reformatted_date_list[1] == "06":
+                    graph_date_list.append("2020/06")
+                elif reformatted_date_list[1] == "07":
+                    graph_date_list.append("2020/07")
+                elif reformatted_date_list[1] == "08":
+                    graph_date_list.append("2020/08")
+                elif reformatted_date_list[1] == "09":
+                    graph_date_list.append("2020/09")
+                elif reformatted_date_list[1] == "10":
+                    graph_date_list.append("2020/10")
+                elif reformatted_date_list[1] == "11":
+                    graph_date_list.append("2020/11")
+                elif reformatted_date_list[1] == "12":
+                    graph_date_list.append("2020/12")
+
+            else:
+                if reformatted_date_list[1] == "01":
+                    graph_date_list.append("2021/01")
+                elif reformatted_date_list[1] == "02":
+                    graph_date_list.append("2021/02")
+                elif reformatted_date_list[1] == "03":
+                    graph_date_list.append("2021/03")
+                elif reformatted_date_list[1] == "04":
+                    graph_date_list.append("2021/04")
+                elif reformatted_date_list[1] == "05":
+                    graph_date_list.append("2021/05")
+                elif reformatted_date_list[1] == "06":
+                    graph_date_list.append("2021/06")
+                elif reformatted_date_list[1] == "07":
+                    graph_date_list.append("2021/07")
+                elif reformatted_date_list[1] == "08":
+                    graph_date_list.append("2021/08")
+                elif reformatted_date_list[1] == "09":
+                    graph_date_list.append("2021/09")
+                elif reformatted_date_list[1] == "10":
+                    graph_date_list.append("2021/10")
+                elif reformatted_date_list[1] == "11":
+                    graph_date_list.append("2021/11")
+                elif reformatted_date_list[1] == "12":
+                    graph_date_list.append("2021/12")
+
+        # Plot the graph of total cases
+        month_list = ["2020/01", "2020/02", "2020/03", "2020/04", "2020/05", "2020/06", "2020/07",
+                      "2020/08", "2020/09", "2020/10", "2020/11", "2020/12",
+                      "2021/01", "2021/02", "2021/03", "2021/04"]
+        plot2 = figure(title="Number of Total cases from " + date_filter + " to " + end_date_filter,
+                       x_range=month_list,
+                       plot_width=1000,
+                       plot_height=400)
+
+        plot2.vbar(graph_date_list, width=0.5, bottom=0, top=cases_list, color="firebrick")
+        plot2.left[0].formatter.use_scientific = False
+        script2, div2 = components(plot2)
+
+        # Plot the graph of total tests
+        plot3 = figure(title="Number of Total tests from " + date_filter + " to " + end_date_filter,
+                       x_range=month_list,
+                       plot_width=1000,
+                       plot_height=400)
+        plot3.vbar(graph_date_list, width=0.5, bottom=0, top=test_list, color="firebrick")
+        plot3.left[0].formatter.use_scientific = False
+        script3, div3 = components(plot3)
+
+        # Plot the scatter plot for number of cases vs tests
+        x_scatter_test = test_list
+        y_scatter_case = cases_list
+
+        scatter_plot_1 = figure(plot_width=700, plot_height=700, x_axis_label='Number of COVID 19 Tests',
+                                y_axis_label='Number of COVID 19 Cases in ' + country_filter)
+        scatter_plot_1.circle(x_scatter_test, y_scatter_case, size=10, line_color="navy", fill_color="orange",
+                              fill_alpha=0.5)
+        scatter_plot_1.left[0].formatter.use_scientific = False
+        scatter_plot_1.below[0].formatter.use_scientific = False
+
+
+        # Best-fit Line for population at risk vs gdp
+        d = pandas.DataFrame(x_scatter_test)
+        d1 = pandas.DataFrame(y_scatter_case)
+        x = np.array(d[0])
+        y = np.array(d1[0])
+
+        par = np.polyfit(x, y, 1, full=True)
+        slope = par[0][0]
+        intercept = par[0][1]
+        y_predicted_pop = [slope * i + intercept for i in x]
+        scatter_plot_1.line(x, y_predicted_pop, color='red')
+        script_test_case, div_test_case = components(scatter_plot_1)
+
+        context ={'Covid19': query_result, 'script2':script2, 'div2': div2, 'script3': script3, 'div3': div3,
+                  'script_test_case': script_test_case, 'div_test_case': div_test_case}
+
+        return render(request, 'covid19/covid19_public_health_test_stat.html', context)
+
+    return render(request, 'covid19/covid19_public_health_test_stat.html')
+
+
+def covid19_public_health_vac_stat(request):
+    return render(request, 'covid19/covid19_public_health_vac_stat.html')
 
 
 def covid19_public_health_facility(request):
