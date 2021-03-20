@@ -26,4 +26,6 @@ urlpatterns = [
          name='covid19_public_health_test_stat'),
     path('covid19_public_health_vac_stat.html', views.covid19_public_health_vac_stat,
          name='covid19_public_health_vac_stat'),
+    path('covid19_stringency.html', views.covid19_stringency,
+         name='covid19_stringency'),
 ]
