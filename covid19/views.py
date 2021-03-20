@@ -914,7 +914,6 @@ def covid19_public_health_test_stat(request):
         scatter_plot_1.left[0].formatter.use_scientific = False
         scatter_plot_1.below[0].formatter.use_scientific = False
 
-
         # Best-fit Line for population at risk vs gdp
         d = pandas.DataFrame(x_scatter_test)
         d1 = pandas.DataFrame(y_scatter_case)
@@ -928,8 +927,8 @@ def covid19_public_health_test_stat(request):
         scatter_plot_1.line(x, y_predicted_pop, color='red')
         script_test_case, div_test_case = components(scatter_plot_1)
 
-        context ={'Covid19': query_result, 'script2':script2, 'div2': div2, 'script3': script3, 'div3': div3,
-                  'script_test_case': script_test_case, 'div_test_case': div_test_case}
+        context = {'Covid19': query_result, 'script2': script2, 'div2': div2, 'script3': script3, 'div3': div3,
+                   'script_test_case': script_test_case, 'div_test_case': div_test_case}
 
         return render(request, 'covid19/covid19_public_health_test_stat.html', context)
 
@@ -937,6 +936,261 @@ def covid19_public_health_test_stat(request):
 
 
 def covid19_public_health_vac_stat(request):
+    if request.GET.get("Location") and request.GET.get("start_date") and request.GET.get("end_date"):
+        country_filter = request.GET.get("Location")
+        date_filter = request.GET.get("start_date")
+        end_date_filter = request.GET.get("end_date")
+        processed_date_list = date_filter.split("-")
+        end_processed_date_list = end_date_filter.split("-")
+        date_ready = datetime.datetime(int(processed_date_list[0]), int(processed_date_list[1]),
+                                       int(processed_date_list[2]))
+        end_date_ready = datetime.datetime(int(end_processed_date_list[0]), int(end_processed_date_list[1]),
+                                           int(end_processed_date_list[2]))
+        query_result = Covid19.objects.filter(Q(location=country_filter) & Q(date__gte=date_filter))
+
+        cases_list = []
+        deaths_list = []
+        vac_pop_list = []
+        vac_list = []
+        name_list = []
+
+        # Create a list to hold the dates that have been included
+        date_list = []
+        dayIncrement = datetime.timedelta(days=1)
+        counter = 0
+
+        # Find out the actual starting date in the database for that country
+        while Covid19.objects.filter(Q(location=country_filter)
+                                     & Q(date=date_ready)).exists() is False:
+            date_ready += dayIncrement
+
+        index = date_ready
+
+        # Prepare date list
+        while index <= end_date_ready:
+            date_list.append(date_ready.isoformat())
+            date_ready += dayIncrement
+            index += dayIncrement
+            counter += 1
+
+        # Prepare tests and cases stats
+        i = 0
+        j = 0
+        k = 0
+        l = 0
+        for cases in query_result.values_list('total_cases'):
+            if i <= counter:
+                cases_list.append(cases)
+                i += 1
+
+        for death in query_result.values_list('total_deaths'):
+            if j <= counter:
+                deaths_list.append(death)
+                j += 1
+
+        for vac_pop in query_result.values_list('people_vaccinated'):
+            if k <= counter:
+                vac_pop_list.append(vac_pop)
+
+        for vac in query_result.values_list('total_vaccinations'):
+            if l <= counter:
+                vac_list.append(vac)
+
+        # Reformat the dates for plotting
+        graph_date_list = []
+        for x in range(len(date_list)):
+            reformatted_date_list = date_list[x].split("-")
+            if reformatted_date_list[0] == "2020":
+                if reformatted_date_list[1] == "01":
+                    graph_date_list.append("2020/01")
+                elif reformatted_date_list[1] == "02":
+                    graph_date_list.append("2020/02")
+                elif reformatted_date_list[1] == "03":
+                    graph_date_list.append("2020/03")
+                elif reformatted_date_list[1] == "04":
+                    graph_date_list.append("2020/04")
+                elif reformatted_date_list[1] == "05":
+                    graph_date_list.append("2020/05")
+                elif reformatted_date_list[1] == "06":
+                    graph_date_list.append("2020/06")
+                elif reformatted_date_list[1] == "07":
+                    graph_date_list.append("2020/07")
+                elif reformatted_date_list[1] == "08":
+                    graph_date_list.append("2020/08")
+                elif reformatted_date_list[1] == "09":
+                    graph_date_list.append("2020/09")
+                elif reformatted_date_list[1] == "10":
+                    graph_date_list.append("2020/10")
+                elif reformatted_date_list[1] == "11":
+                    graph_date_list.append("2020/11")
+                elif reformatted_date_list[1] == "12":
+                    graph_date_list.append("2020/12")
+
+            else:
+                if reformatted_date_list[1] == "01":
+                    graph_date_list.append("2021/01")
+                elif reformatted_date_list[1] == "02":
+                    graph_date_list.append("2021/02")
+                elif reformatted_date_list[1] == "03":
+                    graph_date_list.append("2021/03")
+                elif reformatted_date_list[1] == "04":
+                    graph_date_list.append("2021/04")
+                elif reformatted_date_list[1] == "05":
+                    graph_date_list.append("2021/05")
+                elif reformatted_date_list[1] == "06":
+                    graph_date_list.append("2021/06")
+                elif reformatted_date_list[1] == "07":
+                    graph_date_list.append("2021/07")
+                elif reformatted_date_list[1] == "08":
+                    graph_date_list.append("2021/08")
+                elif reformatted_date_list[1] == "09":
+                    graph_date_list.append("2021/09")
+                elif reformatted_date_list[1] == "10":
+                    graph_date_list.append("2021/10")
+                elif reformatted_date_list[1] == "11":
+                    graph_date_list.append("2021/11")
+                elif reformatted_date_list[1] == "12":
+                    graph_date_list.append("2021/12")
+
+
+        month_list = ["2020/01", "2020/02", "2020/03", "2020/04", "2020/05", "2020/06", "2020/07",
+                      "2020/08", "2020/09", "2020/10", "2020/11", "2020/12",
+                      "2021/01", "2021/02", "2021/03", "2021/04"]
+
+        # Plot the graph of number of people vaccinated
+        plot3 = figure(title="Number of people vaccinated from " + date_filter + " to " + end_date_filter + " in " + country_filter,
+                       x_range=month_list,
+                       plot_width=1000,
+                       plot_height=400)
+        plot3.vbar(graph_date_list, width=0.5, bottom=0, top=vac_pop_list, color="firebrick")
+        plot3.left[0].formatter.use_scientific = False
+        script3, div3 = components(plot3)
+
+        # Plot the graph of number of total vaccinations
+        plot4 = figure(
+            title="Number of total vaccinations from " + date_filter + " to " + end_date_filter + " in " + country_filter,
+            x_range=month_list,
+            plot_width=1000,
+            plot_height=400)
+        plot4.vbar(graph_date_list, width=0.5, bottom=0, top=vac_list, color="firebrick")
+        plot4.left[0].formatter.use_scientific = False
+        script4, div4 = components(plot4)
+
+        # Plot the graph of total cases
+        plot2 = figure(title="Number of Total cases from " + date_filter + " to " + end_date_filter + " in " + country_filter,
+                       x_range=month_list,
+                       plot_width=1000,
+                       plot_height=400)
+
+        plot2.vbar(graph_date_list, width=0.5, bottom=0, top=cases_list, color="firebrick")
+        plot2.left[0].formatter.use_scientific = False
+        script2, div2 = components(plot2)
+
+
+        # Plot the scatter plot for number of deaths vs the number of people vaccinated
+        x_scatter_vac_pop = vac_pop_list
+        y_scatter_death = deaths_list
+
+        scatter_plot_1 = figure(plot_width=700, plot_height=700, x_axis_label='Number of People Vaccinated',
+                                y_axis_label='Number of COVID 19 Deaths in ' + country_filter)
+        scatter_plot_1.circle(x_scatter_vac_pop, y_scatter_death, size=10, line_color="navy", fill_color="orange",
+                              fill_alpha=0.5)
+        scatter_plot_1.left[0].formatter.use_scientific = False
+        scatter_plot_1.below[0].formatter.use_scientific = False
+
+        # Best-fit Line
+        d = pandas.DataFrame(x_scatter_vac_pop)
+        d1 = pandas.DataFrame(y_scatter_death)
+        x = np.array(d[0])
+        y = np.array(d1[0])
+
+        par = np.polyfit(x, y, 1, full=True)
+        slope = par[0][0]
+        intercept = par[0][1]
+        y_predicted_pop = [slope * i + intercept for i in x]
+        scatter_plot_1.line(x, y_predicted_pop, color='red')
+        script_vac_pop_death, div_vac_pop_death = components(scatter_plot_1)
+
+        # Plot the scatter plot for number of deaths vs the number of total vaccinations
+        x_scatter_vac = vac_list
+        y_scatter_death = deaths_list
+
+        scatter_plot_2 = figure(plot_width=700, plot_height=700, x_axis_label='Number of Total Vaccinations',
+                                y_axis_label='Number of COVID 19 Deaths in ' + country_filter)
+        scatter_plot_2.circle(x_scatter_vac_pop, y_scatter_death, size=10, line_color="navy", fill_color="orange",
+                              fill_alpha=0.5)
+        scatter_plot_2.left[0].formatter.use_scientific = False
+        scatter_plot_2.below[0].formatter.use_scientific = False
+
+        # Best-fit Line
+        d = pandas.DataFrame(x_scatter_vac)
+        d1 = pandas.DataFrame(y_scatter_death)
+        x = np.array(d[0])
+        y = np.array(d1[0])
+
+        par = np.polyfit(x, y, 1, full=True)
+        slope = par[0][0]
+        intercept = par[0][1]
+        y_predicted_pop = [slope * i + intercept for i in x]
+        scatter_plot_2.line(x, y_predicted_pop, color='red')
+        script_vac_death, div_vac_death = components(scatter_plot_2)
+
+        # Plot the scatter plot for number of cases vs the number of people vaccinated
+        x_scatter_vac_pop = vac_pop_list
+        y_scatter_cases = cases_list
+
+        scatter_plot_3 = figure(plot_width=700, plot_height=700, x_axis_label='Number of People Vaccinated',
+                                y_axis_label='Number of COVID 19 Cases in ' + country_filter)
+        scatter_plot_3.circle(x_scatter_vac_pop, y_scatter_death, size=10, line_color="navy", fill_color="orange",
+                              fill_alpha=0.5)
+        scatter_plot_3.left[0].formatter.use_scientific = False
+        scatter_plot_3.below[0].formatter.use_scientific = False
+
+        # Best-fit Line
+        d = pandas.DataFrame(x_scatter_vac_pop)
+        d1 = pandas.DataFrame(y_scatter_cases)
+        x = np.array(d[0])
+        y = np.array(d1[0])
+
+        par = np.polyfit(x, y, 1, full=True)
+        slope = par[0][0]
+        intercept = par[0][1]
+        y_predicted_pop = [slope * i + intercept for i in x]
+        scatter_plot_3.line(x, y_predicted_pop, color='red')
+        script_vac_pop_case, div_vac_pop_case = components(scatter_plot_3)
+
+        # Plot the scatter plot for number of cases vs the number of total vaccinations
+        x_scatter_vac = vac_list
+        y_scatter_cases = cases_list
+
+        scatter_plot_4 = figure(plot_width=700, plot_height=700, x_axis_label='Number of Total Vaccinations',
+                                y_axis_label='Number of COVID 19 Cases in ' + country_filter)
+        scatter_plot_4.circle(x_scatter_vac_pop, y_scatter_death, size=10, line_color="navy", fill_color="orange",
+                              fill_alpha=0.5)
+        scatter_plot_4.left[0].formatter.use_scientific = False
+        scatter_plot_4.below[0].formatter.use_scientific = False
+
+        # Best-fit Line
+        d = pandas.DataFrame(x_scatter_vac)
+        d1 = pandas.DataFrame(y_scatter_cases)
+        x = np.array(d[0])
+        y = np.array(d1[0])
+
+        par = np.polyfit(x, y, 1, full=True)
+        slope = par[0][0]
+        intercept = par[0][1]
+        y_predicted_pop = [slope * i + intercept for i in x]
+        scatter_plot_4.line(x, y_predicted_pop, color='red')
+        script_vac_case, div_vac_case = components(scatter_plot_4)
+
+        context = {'Covid19': query_result, 'script4': script4, 'div4': div4, 'script2': script2, 'div2': div2, 'script3': script3, 'div3': div3,
+                   'script_vac_pop_death': script_vac_pop_death, 'div_vac_pop_death': div_vac_pop_death
+                   , 'script_vac_death': script_vac_death, 'div_vac_death':div_vac_death,
+                   'script_vac_pop_case': script_vac_case, 'div_vac_pop_case': div_vac_case,
+                   'script_vac_case': script_vac_case, 'div_vac_case': div_vac_case}
+
+        return render(request, 'covid19/covid19_public_health_vac_stat.html', context)
+
     return render(request, 'covid19/covid19_public_health_vac_stat.html')
 
 
