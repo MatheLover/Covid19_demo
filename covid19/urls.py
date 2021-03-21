@@ -37,4 +37,8 @@ urlpatterns = [
          name='covid19_cardiovascular_death_rate'),
     path('covid19_diabetes_prevalence.html', views.covid19_diabetes_prevalence,
          name='covid19_diabetes_prevalence'),
+    path('covid19_handwashing.html', views.covid19_handwashing,
+         name='covid19_handwashing'),
+    path('covid19_hospital_beds.html', views.covid19_hospital_beds,
+         name='covid19_hospital_beds'),
 ]

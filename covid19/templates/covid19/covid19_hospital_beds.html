@@ -33,13 +33,35 @@
                role="button">Public Health Facility </a>
 
         </div>
-        <a href="http://127.0.0.1:8000/covid19/covid19_handwashing.html" class="btn btn-info"
-               role="button">Handwashing Facility </a>
+        <h1>Please Use the selector to do a query</h1>
+        <form name="filter" action="{% url 'covid19_hospital_beds' %}" method="get">
+            <select id="Location" name="Location">
+                <option disabled="true" selected>Select world or a continent</option>
+                <option value="World">World</option>
+                <option value="Asia">Asia</option>
+                <option value="North America">North America</option>
+                <option value="South America">South America</option>
+                <option value="Oceania">Oceania</option>
+                <option value="Africa">Africa</option>
+                <option value="Europe">European Union</option>
+            </select>
+            <label for="start_date">Start Date(at least from 2020-01-01):</label>
+            <input type="date" id="start_date" name="start_date"
+                   min="2020-01-01" max="2021-1-1">
 
-        <a href="http://127.0.0.1:8000/covid19/covid19_hospital_beds.html" class="btn btn-info"
-               role="button">Hospital Beds per Thousand</a>
 
-
+            <br><br>
+            <input type="submit" value="Submit Query"/>
+        </form>
+        <hr>
+        {{div_bed_case | safe}}
+        <br>
+        {{div_bed_death | safe}}
+        <br>
+        {{div_bed_icu | safe}}
+        <br>
+        {{div_bed_hos | safe}}
+        <br>
 
 
     </center>
@@ -49,6 +71,13 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 </div>
 </body>
-
+<script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-2.2.3.min.js"></script>
+<script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-2.2.3.min.js"></script>
+<script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-tables-2.2.3.min.js"></script>
+<script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-api-2.2.3.min.js"></script>
+{{script_bed_case | safe}}
+{{script_bed_death | safe}}
+{{script_bed_icu | safe}}
+{{script_bed_hos | safe}}
 
 </html>
