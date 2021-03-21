@@ -28,4 +28,6 @@ urlpatterns = [
          name='covid19_public_health_vac_stat'),
     path('covid19_stringency.html', views.covid19_stringency,
          name='covid19_stringency'),
+    path('covid19_aged_pop_stat.html', views.covid19_aged_pop_stat,
+         name='covid19_aged_pop_stat'),
 ]

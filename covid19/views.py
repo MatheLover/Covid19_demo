@@ -1378,6 +1378,83 @@ def covid19_stringency(request):
         return render(request, 'covid19/covid19_stringency.html', context)
     return render(request, 'covid19/covid19_stringency.html')
 
+def covid19_aged_pop_stat(request):
+    if request.GET.get("Location") and request.GET.get("start_date"):
+        country_filter = request.GET.get("Location")
+        date_filter = request.GET.get("start_date")
+        query_result = Covid19.objects.filter(Q(location=country_filter) & Q(date__gte=date_filter))
+
+        cases_list = []
+        deaths_list = []
+        aged_65_older_list = []
+        aged_70_older_list = []
+
+        for result in query_result:
+            cases_list.append(result.total_cases)
+            deaths_list.append(result.total_deaths)
+            aged_65_older_list.append(result.aged_65_older)
+            aged_70_older_list.append(result.aged_70_older)
+
+
+        # Plot scatter plot for cases vs proportion of population aged 65 or above
+        x_scatter_pop_65 = aged_65_older_list
+        y_scatter_cases = cases_list
+
+        scatter_plot_case_65 = figure(plot_width=700, plot_height=700, x_axis_label='Proportion of population aged 65 or above',
+                                        y_axis_label='Number of COVID 19 Cases in ' + country_filter)
+        scatter_plot_case_65.circle(x_scatter_pop_65, y_scatter_cases, size=10, line_color="navy", fill_color="orange",
+                                      fill_alpha=0.5)
+        scatter_plot_case_65.left[0].formatter.use_scientific = False
+        scatter_plot_case_65.below[0].formatter.use_scientific = False
+        script_65_case, div_65_case = components(scatter_plot_case_65)
+
+        # Plot scatter plot for deaths vs proportion of population aged 65 or above
+        x_scatter_pop_65 = aged_65_older_list
+        y_scatter_deaths = deaths_list
+
+        scatter_plot_death_65 = figure(plot_width=700, plot_height=700,
+                                      x_axis_label='Proportion of population aged 65 or above',
+                                      y_axis_label='Number of COVID 19 Deaths in ' + country_filter)
+        scatter_plot_death_65.circle(x_scatter_pop_65, y_scatter_deaths, size=10, line_color="navy", fill_color="orange",
+                                    fill_alpha=0.5)
+        scatter_plot_death_65.left[0].formatter.use_scientific = False
+        scatter_plot_death_65.below[0].formatter.use_scientific = False
+        script_65_death, div_65_death = components(scatter_plot_death_65)
+
+        # Plot scatter plot for cases vs proportion of population aged 70 or above
+        x_scatter_pop_70 = aged_70_older_list
+        y_scatter_cases = cases_list
+
+        scatter_plot_case_70 = figure(plot_width=700, plot_height=700,
+                                      x_axis_label='Proportion of population aged 70 or above',
+                                      y_axis_label='Number of COVID 19 Cases in ' + country_filter)
+        scatter_plot_case_70.circle(x_scatter_pop_70, y_scatter_cases, size=10, line_color="navy", fill_color="orange",
+                                    fill_alpha=0.5)
+        scatter_plot_case_70.left[0].formatter.use_scientific = False
+        scatter_plot_case_70.below[0].formatter.use_scientific = False
+        script_70_case, div_70_case = components(scatter_plot_case_70)
+
+        # Plot scatter plot for deaths vs proportion of population aged 65 or above
+        x_scatter_pop_70 = aged_70_older_list
+        y_scatter_deaths = deaths_list
+
+        scatter_plot_death_70 = figure(plot_width=700, plot_height=700,
+                                       x_axis_label='Proportion of population aged 65 or above',
+                                       y_axis_label='Number of COVID 19 Deaths in ' + country_filter)
+        scatter_plot_death_70.circle(x_scatter_pop_70, y_scatter_deaths, size=10, line_color="navy",
+                                     fill_color="orange",
+                                     fill_alpha=0.5)
+        scatter_plot_death_70.left[0].formatter.use_scientific = False
+        scatter_plot_death_70.below[0].formatter.use_scientific = False
+        script_70_death, div_70_death = components(scatter_plot_death_70)
+
+        context = {'Covid19': query_result,'script_65_case': script_65_case
+            , 'div_65_case': div_65_case, 'script_65_death': script_65_death, 'div_65_death':div_65_death,
+                   'script_70_case':script_70_case, 'div_70_case': div_70_case,
+                   'script_70_death':script_70_death, 'div_70_death': div_70_death}
+
+        return render(request, 'covid19/covid19_aged_pop_stat.html', context)
+    return render(request, 'covid19/covid19_aged_pop_stat.html')
 
 def covid19_public_health_facility(request):
     return render(request, 'covid19/covid19_public_health_facility.html')
