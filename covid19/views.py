@@ -1557,9 +1557,96 @@ def covid19_gdp(request):
         return render(request, 'covid19/covid19_gdp.html', context)
     return render(request, 'covid19/covid19_gdp.html')
 
+def covid19_public_health_statistics(request):
+    return render(request, 'covid19/covid19_public_health_statistics.html')
+
+def covid19_cardiovascular_death_rate(request):
+    if request.GET.get("Location") and request.GET.get("start_date"):
+        country_filter = request.GET.get("Location")
+        date_filter = request.GET.get("start_date")
+        if country_filter == "World":
+            query_result = Covid19.objects.filter(Q(location="World") & Q(date__gte=date_filter))
+
+        else:
+            query_result = Covid19.objects.filter(Q(continent=country_filter) & Q(date__gte=date_filter))
+
+        cases_list = []
+        deaths_list = []
+        aged_65_list = []
+        aged_70_list = []
+        cardiovasc_death_rate_list = []
+
+        for result in query_result:
+            cases_list.append(result.total_cases)
+            deaths_list.append(result.total_deaths)
+            aged_65_list.append(result.aged_65_older)
+            aged_70_list.append(result.aged_70_older)
+            cardiovasc_death_rate_list.append(result.cardiovasc_death_rate)
+
+        #Plot scatter plot for cardiovascular death rate vs percentage of 65 or above population
+        x_scatter_65 = aged_65_list
+        y_scatter_car = cardiovasc_death_rate_list
+
+        scatter_plot_65_car = figure(plot_width=700, plot_height=700,
+                                       x_axis_label='Percentage of 65 or above population',
+                                       y_axis_label='Cardiovascular death rate in ' + country_filter)
+        scatter_plot_65_car.circle(x_scatter_65, y_scatter_car, size=10, line_color="navy", fill_color="orange",
+                                     fill_alpha=0.5)
+        scatter_plot_65_car.left[0].formatter.use_scientific = False
+        scatter_plot_65_car.below[0].formatter.use_scientific = False
+        script_65_car, div_65_car = components(scatter_plot_65_car)
+
+        #Plot scatter plot for cardiovascular death rate vs percentage of 70 or above population
+        x_scatter_70 = aged_70_list
+        y_scatter_car = cardiovasc_death_rate_list
+
+        scatter_plot_70_car = figure(plot_width=700, plot_height=700,
+                                     x_axis_label='Percentage of 70 or above population',
+                                     y_axis_label='Cardiovascular death rate in ' + country_filter)
+        scatter_plot_70_car.circle(x_scatter_70, y_scatter_car, size=10, line_color="navy", fill_color="orange",
+                                   fill_alpha=0.5)
+        scatter_plot_70_car.left[0].formatter.use_scientific = False
+        scatter_plot_70_car.below[0].formatter.use_scientific = False
+        script_70_car, div_70_car = components(scatter_plot_65_car)
+
+        #Plot scatter plot for cases vs cardiovascular death rate
+        x_scatter_car = cardiovasc_death_rate_list
+        y_scatter_case = cases_list
+
+        scatter_plot_case_car = figure(plot_width=700, plot_height=700,
+                                     x_axis_label='Cardiovascular death rate',
+                                     y_axis_label='Number of COVID 19 cases in ' + country_filter)
+        scatter_plot_case_car.circle(x_scatter_car, y_scatter_case, size=10, line_color="navy", fill_color="orange",
+                                   fill_alpha=0.5)
+        scatter_plot_case_car.left[0].formatter.use_scientific = False
+        scatter_plot_case_car.below[0].formatter.use_scientific = False
+        script_case_car, div_case_car = components(scatter_plot_case_car)
+
+        #Plot scatter plot for deaths vs cardiovascular death rate
+        x_scatter_car = cardiovasc_death_rate_list
+        y_scatter_death = deaths_list
+
+        scatter_plot_death_car = figure(plot_width=700, plot_height=700,
+                                       x_axis_label='Cardiovascular death rate',
+                                       y_axis_label='Number of COVID 19 cases in ' + country_filter)
+        scatter_plot_death_car.circle(x_scatter_car, y_scatter_death, size=10, line_color="navy", fill_color="orange",
+                                     fill_alpha=0.5)
+        scatter_plot_death_car.left[0].formatter.use_scientific = False
+        scatter_plot_death_car.below[0].formatter.use_scientific = False
+        script_death_car, div_death_car = components(scatter_plot_death_car)
+
+        context ={'Covid19': query_result,'script_65_car': script_65_car, 'div_65_car':div_65_car,
+                  'script_70_car': script_70_car, 'div_70_car': div_70_car,
+                  'script_case_car':script_case_car , 'div_case_car': div_case_car,
+                  'script_death_car': script_death_car, 'div_death_car':div_death_car }
+        return render(request, 'covid19/covid19_cardiovascular_death_rate.html', context)
+    return render(request, 'covid19/covid19_cardiovascular_death_rate.html')
+
+def covid19_diabetes_prevalence(request):
+    return render(request, 'covid19/covid19_diabetes_prevalence.html')
+
 def covid19_public_health_facility(request):
     return render(request, 'covid19/covid19_public_health_facility.html')
 
 
-def covid19_public_health_statistics(request):
-    return render(request, 'covid19/covid19_public_health_statistics.html')
+
