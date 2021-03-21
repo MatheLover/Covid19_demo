@@ -1456,6 +1456,107 @@ def covid19_aged_pop_stat(request):
         return render(request, 'covid19/covid19_aged_pop_stat.html', context)
     return render(request, 'covid19/covid19_aged_pop_stat.html')
 
+def covid19_gdp(request):
+    if request.GET.get("Location") and request.GET.get("start_date"):
+        country_filter = request.GET.get("Location")
+        date_filter = request.GET.get("start_date")
+        if country_filter == "World":
+            query_result = Covid19.objects.filter(Q(location="World") & Q(date__gte=date_filter))
+
+        else:
+            query_result = Covid19.objects.filter(Q(continent=country_filter) & Q(date__gte=date_filter))
+
+        cases_list = []
+        deaths_list = []
+        tests_list = []
+        vac_pop_list = []
+        vac_list = []
+        gdp_list = []
+
+        for result in query_result:
+            cases_list.append(result.total_cases)
+            deaths_list.append(result.total_deaths)
+            tests_list.append(result.total_tests)
+            vac_pop_list.append(result.people_vaccinated)
+            vac_list.append(result.total_vaccinations)
+            gdp_list.append(result.gdp_per_capita)
+
+
+        # Plot scatterplot for case vs GDP
+        x_scatter_gdp = gdp_list
+        y_scatter_cases = cases_list
+
+        scatter_plot_gdp_case = figure(plot_width=700, plot_height=700,
+                                      x_axis_label='GDP per capita',
+                                      y_axis_label='Number of COVID 19 Cases in ' + country_filter)
+        scatter_plot_gdp_case.circle(x_scatter_gdp, y_scatter_cases, size=10, line_color="navy", fill_color="orange",
+                                    fill_alpha=0.5)
+        scatter_plot_gdp_case.left[0].formatter.use_scientific = False
+        scatter_plot_gdp_case.below[0].formatter.use_scientific = False
+        script_gdp_case, div_gdp_case = components(scatter_plot_gdp_case)
+
+        # Plot scatterplot for death vs GDP
+        x_scatter_gdp = gdp_list
+        y_scatter_deaths = deaths_list
+
+        scatter_plot_gdp_death = figure(plot_width=700, plot_height=700,
+                                       x_axis_label='GDP per capita',
+                                       y_axis_label='Number of COVID 19 Deaths in ' + country_filter)
+        scatter_plot_gdp_death.circle(x_scatter_gdp, y_scatter_deaths, size=10, line_color="navy", fill_color="orange",
+                                     fill_alpha=0.5)
+        scatter_plot_gdp_death.left[0].formatter.use_scientific = False
+        scatter_plot_gdp_death.below[0].formatter.use_scientific = False
+        script_gdp_death, div_gdp_death = components(scatter_plot_gdp_death)
+
+        # Plot scatterplot for test vs GDP
+        x_scatter_gdp = gdp_list
+        y_scatter_test = tests_list
+
+        scatter_plot_gdp_test = figure(plot_width=700, plot_height=700,
+                                        x_axis_label='GDP per capita',
+                                        y_axis_label='Number of COVID 19 Deaths in ' + country_filter)
+        scatter_plot_gdp_test.circle(x_scatter_gdp, y_scatter_test, size=10, line_color="navy", fill_color="orange",
+                                      fill_alpha=0.5)
+        scatter_plot_gdp_test.left[0].formatter.use_scientific = False
+        scatter_plot_gdp_test.below[0].formatter.use_scientific = False
+        script_gdp_test, div_gdp_test = components(scatter_plot_gdp_test)
+
+        # Plot scatterplot for number of people vaccinated vs GDP
+        x_scatter_gdp = gdp_list
+        y_scatter_vac_people = vac_pop_list
+
+        scatter_plot_gdp_vac_pop = figure(plot_width=700, plot_height=700,
+                                       x_axis_label='GDP per capita',
+                                       y_axis_label='Number of vaccinated people in ' + country_filter)
+        scatter_plot_gdp_vac_pop.circle(x_scatter_gdp, y_scatter_vac_people, size=10, line_color="navy", fill_color="orange",
+                                     fill_alpha=0.5)
+        scatter_plot_gdp_vac_pop.left[0].formatter.use_scientific = False
+        scatter_plot_gdp_vac_pop.below[0].formatter.use_scientific = False
+        script_gdp_vac_pop, div_gdp_vac_pop = components(scatter_plot_gdp_vac_pop)
+
+        # Plot scatterplot for number of total vaccinations vs GDP
+        x_scatter_gdp = gdp_list
+        y_scatter_vac = vac_list
+
+        scatter_plot_gdp_vac = figure(plot_width=700, plot_height=700,
+                                          x_axis_label='GDP per capita',
+                                          y_axis_label='Number of total vaccinations in ' + country_filter)
+        scatter_plot_gdp_vac.circle(x_scatter_gdp, y_scatter_vac, size=10, line_color="navy",
+                                        fill_color="orange",
+                                        fill_alpha=0.5)
+        scatter_plot_gdp_vac.left[0].formatter.use_scientific = False
+        scatter_plot_gdp_vac.below[0].formatter.use_scientific = False
+        script_gdp_vac, div_gdp_vac = components(scatter_plot_gdp_vac)
+
+        context = {'Covid19': query_result, 'script_gdp_case': script_gdp_case , 'div_gdp_case': div_gdp_case,
+                   'script_gdp_death': script_gdp_death , 'div_gdp_death': div_gdp_death,
+                   'script_gdp_test':script_gdp_test, 'div_gdp_test': div_gdp_test,
+                   'script_gdp_vac_pop': script_gdp_vac_pop , 'div_gdp_vac_pop': div_gdp_vac_pop,
+                   'script_gdp_vac': script_gdp_vac, 'div_gdp_vac': div_gdp_vac}
+
+        return render(request, 'covid19/covid19_gdp.html', context)
+    return render(request, 'covid19/covid19_gdp.html')
+
 def covid19_public_health_facility(request):
     return render(request, 'covid19/covid19_public_health_facility.html')
 
