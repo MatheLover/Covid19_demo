@@ -1643,6 +1643,85 @@ def covid19_cardiovascular_death_rate(request):
     return render(request, 'covid19/covid19_cardiovascular_death_rate.html')
 
 def covid19_diabetes_prevalence(request):
+    if request.GET.get("Location") and request.GET.get("start_date"):
+        country_filter = request.GET.get("Location")
+        date_filter = request.GET.get("start_date")
+        if country_filter == "World":
+            query_result = Covid19.objects.filter(Q(location="World") & Q(date__gte=date_filter))
+
+        else:
+            query_result = Covid19.objects.filter(Q(continent=country_filter) & Q(date__gte=date_filter))
+
+        cases_list = []
+        deaths_list = []
+        aged_65_list = []
+        aged_70_list = []
+        dia_prev_list = []
+
+        for result in query_result:
+            cases_list.append(result.total_cases)
+            deaths_list.append(result.total_deaths)
+            aged_65_list.append(result.aged_65_older)
+            aged_70_list.append(result.aged_70_older)
+            dia_prev_list.append(result.diabetes_prevalence)
+
+        # Plot scatter plot for diabetes prevalence rate vs percentage of 65 or above population
+        x_scatter_65 = aged_65_list
+        y_scatter_prev = dia_prev_list
+
+        scatter_plot_65_prev = figure(plot_width=700, plot_height=700,
+                                     x_axis_label='Percentage of 65 or above population',
+                                     y_axis_label='Diabetes prevalence rate in ' + country_filter)
+        scatter_plot_65_prev.circle(x_scatter_65, y_scatter_prev, size=10, line_color="navy", fill_color="orange",
+                                   fill_alpha=0.5)
+        scatter_plot_65_prev.left[0].formatter.use_scientific = False
+        scatter_plot_65_prev.below[0].formatter.use_scientific = False
+        script_65_prev, div_65_prev = components(scatter_plot_65_prev)
+
+        # Plot scatter plot for diabetes prevalence rate  vs percentage of 70 or above population
+        x_scatter_70 = aged_70_list
+        y_scatter_prev = dia_prev_list
+
+        scatter_plot_70_prev = figure(plot_width=700, plot_height=700,
+                                     x_axis_label='Percentage of 70 or above population',
+                                     y_axis_label='Diabetes prevalence rate in ' + country_filter)
+        scatter_plot_70_prev.circle(x_scatter_70, y_scatter_prev, size=10, line_color="navy", fill_color="orange",
+                                   fill_alpha=0.5)
+        scatter_plot_70_prev.left[0].formatter.use_scientific = False
+        scatter_plot_70_prev.below[0].formatter.use_scientific = False
+        script_70_prev, div_70_prev = components(scatter_plot_70_prev)
+
+        # Plot scatter plot for cases vs cardiovascular death rate
+        x_scatter_prev = dia_prev_list
+        y_scatter_case = cases_list
+
+        scatter_plot_prev_car = figure(plot_width=700, plot_height=700,
+                                       x_axis_label='Diabetes prevalence rate',
+                                       y_axis_label='Number of COVID 19 cases in ' + country_filter)
+        scatter_plot_prev_car.circle(x_scatter_prev, y_scatter_case, size=10, line_color="navy", fill_color="orange",
+                                     fill_alpha=0.5)
+        scatter_plot_prev_car.left[0].formatter.use_scientific = False
+        scatter_plot_prev_car.below[0].formatter.use_scientific = False
+        script_prev_car, div_prev_car = components(scatter_plot_prev_car)
+
+        # Plot scatter plot for deaths vs cardiovascular death rate
+        x_scatter_prev = dia_prev_list
+        y_scatter_death = deaths_list
+
+        scatter_plot_death_prev = figure(plot_width=700, plot_height=700,
+                                        x_axis_label='Diabetes prevalence rate',
+                                        y_axis_label='Number of COVID 19 cases in ' + country_filter)
+        scatter_plot_death_prev.circle(x_scatter_prev, y_scatter_death, size=10, line_color="navy", fill_color="orange",
+                                      fill_alpha=0.5)
+        scatter_plot_death_prev.left[0].formatter.use_scientific = False
+        scatter_plot_death_prev.below[0].formatter.use_scientific = False
+        script_death_prev, div_death_prev = components(scatter_plot_death_prev)
+
+        context = {'Covid19': query_result, 'script_65_prev': script_65_prev, 'div_65_prev': div_65_prev,
+                   'script_70_prev': script_70_prev, 'div_70_prev': div_70_prev,
+                   'script_prev_car': script_prev_car, 'div_prev_car': div_prev_car,
+                   'script_death_prev': script_death_prev, 'div_death_prev': div_death_prev}
+        return render(request, 'covid19/covid19_diabetes_prevalence.html', context)
     return render(request, 'covid19/covid19_diabetes_prevalence.html')
 
 def covid19_public_health_facility(request):
