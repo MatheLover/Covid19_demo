@@ -1157,7 +1157,7 @@ def covid19_public_health_vac_stat(request):
 
         scatter_plot_3 = figure(plot_width=700, plot_height=700, x_axis_label='Number of People Vaccinated',
                                 y_axis_label='Number of COVID 19 Cases in ' + country_filter)
-        scatter_plot_3.circle(x_scatter_vac_pop, y_scatter_death, size=10, line_color="navy", fill_color="orange",
+        scatter_plot_3.circle(x_scatter_vac_pop, y_scatter_cases, size=10, line_color="navy", fill_color="orange",
                               fill_alpha=0.5)
         scatter_plot_3.left[0].formatter.use_scientific = False
         scatter_plot_3.below[0].formatter.use_scientific = False
@@ -1181,7 +1181,7 @@ def covid19_public_health_vac_stat(request):
 
         scatter_plot_4 = figure(plot_width=700, plot_height=700, x_axis_label='Number of Total Vaccinations',
                                 y_axis_label='Number of COVID 19 Cases in ' + country_filter)
-        scatter_plot_4.circle(x_scatter_vac_pop, y_scatter_death, size=10, line_color="navy", fill_color="orange",
+        scatter_plot_4.circle(x_scatter_vac_pop, y_scatter_cases, size=10, line_color="navy", fill_color="orange",
                               fill_alpha=0.5)
         scatter_plot_4.left[0].formatter.use_scientific = False
         scatter_plot_4.below[0].formatter.use_scientific = False
@@ -1203,7 +1203,7 @@ def covid19_public_health_vac_stat(request):
                    'script3': script3, 'div3': div3,
                    'script_vac_pop_death': script_vac_pop_death, 'div_vac_pop_death': div_vac_pop_death
             , 'script_vac_death': script_vac_death, 'div_vac_death': div_vac_death,
-                   'script_vac_pop_case': script_vac_case, 'div_vac_pop_case': div_vac_case,
+                   'script_vac_pop_case': script_vac_pop_case, 'div_vac_pop_case': div_vac_pop_case,
                    'script_vac_case': script_vac_case, 'div_vac_case': div_vac_case}
 
         return render(request, 'covid19/covid19_public_health_vac_stat.html', context)
