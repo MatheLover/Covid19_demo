@@ -255,7 +255,7 @@ def covid19_day_stat_map(request):
             html = """Country: """ + co[7] \
                    + """<br>Date: """ + start_date \
                    + """<br>Case Number: """ + str(co[0]) \
-                   + """<br>Deaths on: """ + str(co[1]) \
+                   + """<br>Deaths: """ + str(co[1]) \
                    + """<br>Reproduction rate: """ + str(co[2]) \
                    + """<br>Number of ICU patients: """ + str(co[3]) \
                    + """<br>Number of hospitalized patients: """ + str(co[4])
@@ -345,6 +345,7 @@ def covid19_cum_stat(request):
 
 def covid19_cum_stat_map(request):
     obtained_feature = request.GET.get("feature")
+    obtained_country = request.GET.get("Location")
     date = request.GET.get("start_date")
     slider_name_list = []
     slider_case_list = []
@@ -357,7 +358,10 @@ def covid19_cum_stat_map(request):
     slider_hosp_list = []
 
     if obtained_feature == "total_cases":
-        result = Covid19.objects.filter(date__gte=date)
+        if obtained_country == "World":
+            result = Covid19.objects.filter(date__gte=date)
+        else:
+            result = Covid19.objects.filter(Q(date__gte=date) & Q(location=obtained_country))
         result = result.exclude(location="World").exclude(location="North America").exclude(
             location="European Union").exclude(location="Asia").exclude(location="South America").exclude(
             location="Oceania").exclude(location="Africa").exclude(location="Georgia").exclude(location="Chad").exclude(
@@ -440,7 +444,10 @@ def covid19_cum_stat_map(request):
 
         return render(request, 'covid19/covid19_cum_stat_map.html', context)
     elif obtained_feature == "total_deaths":
-        result = Covid19.objects.filter(date__gte=date)
+        if obtained_country == "World":
+            result = Covid19.objects.filter(date__gte=date)
+        else:
+            result = Covid19.objects.filter(Q(date__gte=date) & Q(location=obtained_country))
         result = result.exclude(location="World").exclude(location="North America").exclude(
             location="European Union").exclude(location="Asia").exclude(location="South America").exclude(
             location="Oceania").exclude(location="Africa").exclude(location="Georgia").exclude(location="Chad").exclude(
@@ -522,7 +529,10 @@ def covid19_cum_stat_map(request):
         }
         return render(request, 'covid19/covid19_cum_stat_map.html', context)
     elif obtained_feature == "reproduction_rate":
-        result = Covid19.objects.filter(date__gte=date)
+        if obtained_country == "World":
+            result = Covid19.objects.filter(date__gte=date)
+        else:
+            result = Covid19.objects.filter(Q(date__gte=date) & Q(location=obtained_country))
         result = result.exclude(location="World").exclude(location="North America").exclude(
             location="European Union").exclude(location="Asia").exclude(location="South America").exclude(
             location="Oceania").exclude(location="Africa").exclude(location="Georgia").exclude(location="Chad").exclude(
@@ -605,7 +615,10 @@ def covid19_cum_stat_map(request):
         }
         return render(request, 'covid19/covid19_cum_stat_map.html', context)
     elif obtained_feature == "icu_patients":
-        result = Covid19.objects.filter(date__gte=date)
+        if obtained_country == "World":
+            result = Covid19.objects.filter(date__gte=date)
+        else:
+            result = Covid19.objects.filter(Q(date__gte=date) & Q(location=obtained_country))
         result = result.exclude(location="World").exclude(location="North America").exclude(
             location="European Union").exclude(location="Asia").exclude(location="South America").exclude(
             location="Oceania").exclude(location="Africa").exclude(location="Georgia").exclude(location="Chad").exclude(
@@ -687,7 +700,10 @@ def covid19_cum_stat_map(request):
         }
         return render(request, 'covid19/covid19_cum_stat_map.html', context)
     elif obtained_feature == "hosp_patients":
-        result = Covid19.objects.filter(date__gte=date)
+        if obtained_country == "World":
+            result = Covid19.objects.filter(date__gte=date)
+        else:
+            result = Covid19.objects.filter(Q(date__gte=date) & Q(location=obtained_country))
         result = result.exclude(location="World").exclude(location="North America").exclude(
             location="European Union").exclude(location="Asia").exclude(location="South America").exclude(
             location="Oceania").exclude(location="Africa").exclude(location="Georgia").exclude(location="Chad").exclude(
