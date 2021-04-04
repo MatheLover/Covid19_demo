@@ -477,10 +477,9 @@ def covid19_cum_stat_map(request):
         country = country.rename(columns={'ADMIN': 'location'})
         combined_df = sorted_df.merge(country, on='location')
 
-        # Use Log to plot the cases
-        # combined_df['log_total_cases'] = np.log10(combined_df['total_deaths'])
         combined_df = combined_df[['location', 'total_deaths', 'date', 'geometry']]
 
+        # Format date
         combined_df['date'] = pd.to_datetime(combined_df['date']).astype(int) / 10 ** 9
         combined_df['date'] = combined_df['date'].astype(int).astype(str)
 
