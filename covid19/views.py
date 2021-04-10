@@ -313,7 +313,7 @@ def covid19_day_stat_map(request):
             html = """Country: """ + co[7] \
                    + """<br>Date: """ + start_date \
                    + """<br>Case Number: """ + str(co[0]) \
-                   + """<br>Deaths on: """ + str(co[1]) \
+                   + """<br>Deaths: """ + str(co[1]) \
                    + """<br>Reproduction rate: """ + str(co[2]) \
                    + """<br>Number of ICU patients: """ + str(co[3]) \
                    + """<br>Number of hospitalized patients: """ + str(co[4])
