@@ -1704,8 +1704,9 @@ def covid19_stringency(request):
 
         scatter_plot_case_str = figure(plot_width=700, plot_height=700, x_axis_label='Stringency Index',
                                        y_axis_label='Number of COVID 19 Cases in ' + country_filter)
-        scatter_plot_case_str.circle(x_scatter_str, y_scatter_cases, size=10, line_color="navy", fill_color="orange",
-                                     fill_alpha=0.5)
+        #scatter_plot_case_str.circle(x_scatter_str, y_scatter_cases, size=10, line_color="navy", fill_color="orange",
+                                    # fill_alpha=0.5)
+        scatter_plot_case_str.vbar(x_scatter_str, width=0.8,bottom=0,top=y_scatter_cases,color="orange")
         scatter_plot_case_str.left[0].formatter.use_scientific = False
         scatter_plot_case_str.below[0].formatter.use_scientific = False
 
@@ -1730,8 +1731,9 @@ def covid19_stringency(request):
 
         scatter_plot_death_str = figure(plot_width=700, plot_height=700, x_axis_label='Stringency Index',
                                         y_axis_label='Number of COVID 19 Deaths in ' + country_filter)
-        scatter_plot_death_str.circle(x_scatter_str, y_scatter_deaths, size=10, line_color="navy", fill_color="orange",
-                                      fill_alpha=0.5)
+        #scatter_plot_death_str.circle(x_scatter_str, y_scatter_deaths, size=10, line_color="navy", fill_color="orange",
+                                      #fill_alpha=0.5)
+        scatter_plot_death_str.vbar(x_scatter_str,width=0.8,bottom=0,top=y_scatter_deaths,color="blue")
         scatter_plot_death_str.left[0].formatter.use_scientific = False
         scatter_plot_death_str.below[0].formatter.use_scientific = False
 
