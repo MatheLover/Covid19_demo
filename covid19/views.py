@@ -357,6 +357,10 @@ def covid19_cum_stat_map(request):
     slider_icu_list = []
     slider_hosp_list = []
 
+    slider_test_list =[]
+    slider_vac_list =[]
+    slider_vac_pop_list=[]
+
     if obtained_feature == "total_cases":
         if obtained_country == "World":
             result = Covid19.objects.filter(date__gte=date)
@@ -776,6 +780,264 @@ def covid19_cum_stat_map(request):
         ).add_to(m)
         _ = color_map.add_to(m)
         color_map.caption = "Number of COVID 19 patients admitted into hospitals"
+
+        m.save("covid19/covid19_cum_stat_map.html")
+        m = m._repr_html_()
+        context = {
+            'm': m
+        }
+        return render(request, 'covid19/covid19_cum_stat_map.html', context)
+
+    elif obtained_feature == "total_tests":
+        if obtained_country == "World":
+            result = Covid19.objects.filter(date__gte=date)
+        else:
+            result = Covid19.objects.filter(Q(date__gte=date) & Q(location=obtained_country))
+        result = result.exclude(location="World").exclude(location="North America").exclude(
+            location="European Union").exclude(location="Asia").exclude(location="South America").exclude(
+            location="Oceania").exclude(location="Africa").exclude(location="Georgia").exclude(location="Chad").exclude(
+            location="Jordan")
+        for m in result:
+            slider_name_list.append(m.location)
+            slider_test_list.append(m.total_tests)
+            slider_lat_list.append(m.Latitude)
+            slider_lon_list.append(m.Longitude)
+            slider_date_list.append(m.date)
+
+        combined = zip(slider_name_list, slider_test_list, slider_date_list)
+        slider_combined = list(combined)
+        df_slider = pd.DataFrame(data=slider_combined, columns=['location', 'total_tests', 'date'])
+        df_slider = df_slider[df_slider.total_tests != 0]
+
+        # sorting
+        sorted_df = df_slider.sort_values(['location',
+                                           'date']).reset_index(drop=True)
+
+        # Combine data with the file
+        country = gpd.read_file("/Users/benchiang/Desktop/countries.geojson")
+
+        # Change country name
+        country = country.replace({'ADMIN': 'United States of America'},
+                                  'United States')
+        country = country.rename(columns={'ADMIN': 'location'})
+        combined_df = sorted_df.merge(country, on='location')
+
+        # Use Log to plot the cases
+        combined_df['log_total_tests'] = np.log10(combined_df['total_tests'])
+        combined_df = combined_df[['location', 'log_total_tests', 'date', 'geometry']]
+
+        combined_df['date'] = pd.to_datetime(combined_df['date']).astype(int) / 10 ** 9
+        combined_df['date'] = combined_df['date'].astype(int).astype(str)
+
+        # Construct color map
+        max_color = max(combined_df['log_total_tests'])
+        min_color = min(combined_df['log_total_tests'])
+        color_map = cm.linear.YlOrRd_09.scale(min_color, max_color)
+        combined_df['color'] = combined_df['log_total_tests'].map(color_map)
+
+        # Construct style dictionary
+        unique_country_list = combined_df['location'].unique().tolist()
+        ctry_index = range(len(unique_country_list))
+
+        style_dic = {}
+        for j in ctry_index:
+            ctry = unique_country_list[j]
+            country = combined_df[combined_df['location'] == ctry]
+            in_dic = {
+
+            }
+            for _, r in country.iterrows():
+                in_dic[r['date']] = {'color': r['color'], 'opacity': 0.8}
+            style_dic[str(j)] = in_dic
+
+        # Make a dataframe containing each country
+        specific_ctry = combined_df[['geometry']]
+        ctry_gdf = gpd.GeoDataFrame(specific_ctry)
+        ctry_gdf = ctry_gdf.drop_duplicates().reset_index()
+
+        # Create a slider map
+        from folium.plugins import TimeSliderChoropleth
+        m = folium.Map(min_zoom=2, max_bounds=True, tiles='cartodbpositron')
+
+        # Plot Slider Map
+        _ = TimeSliderChoropleth(
+            data=ctry_gdf.to_json(),
+            styledict=style_dic,
+        ).add_to(m)
+        _ = color_map.add_to(m)
+        color_map.caption = "Number of COVID 19 Tests in log10 scale"
+
+        m.save("covid19/covid19_cum_stat_map.html")
+        m = m._repr_html_()
+        context = {
+            'm': m
+        }
+        return render(request, 'covid19/covid19_cum_stat_map.html', context)
+
+    elif obtained_feature == "total_vaccinations":
+        if obtained_country == "World":
+            result = Covid19.objects.filter(date__gte=date)
+        else:
+            result = Covid19.objects.filter(Q(date__gte=date) & Q(location=obtained_country))
+        result = result.exclude(location="World").exclude(location="North America").exclude(
+            location="European Union").exclude(location="Asia").exclude(location="South America").exclude(
+            location="Oceania").exclude(location="Africa").exclude(location="Georgia").exclude(location="Chad").exclude(
+            location="Jordan")
+        for m in result:
+            slider_name_list.append(m.location)
+            slider_vac_list.append(m.total_vaccinations)
+            slider_lat_list.append(m.Latitude)
+            slider_lon_list.append(m.Longitude)
+            slider_date_list.append(m.date)
+
+        combined = zip(slider_name_list, slider_vac_list, slider_date_list)
+        slider_combined = list(combined)
+        df_slider = pd.DataFrame(data=slider_combined, columns=['location', 'total_vaccinations', 'date'])
+        df_slider = df_slider[df_slider.total_vaccinations != 0]
+
+        # sorting
+        sorted_df = df_slider.sort_values(['location',
+                                           'date']).reset_index(drop=True)
+
+        # Combine data with the file
+        country = gpd.read_file("/Users/benchiang/Desktop/countries.geojson")
+
+        # Change country name
+        country = country.replace({'ADMIN': 'United States of America'},
+                                  'United States')
+        country = country.rename(columns={'ADMIN': 'location'})
+        combined_df = sorted_df.merge(country, on='location')
+
+        # Use Log to plot the cases
+        combined_df['log_total_vaccinations'] = np.log10(combined_df['total_vaccinations'])
+        combined_df = combined_df[['location', 'log_total_vaccinations', 'date', 'geometry']]
+
+        combined_df['date'] = pd.to_datetime(combined_df['date']).astype(int) / 10 ** 9
+        combined_df['date'] = combined_df['date'].astype(int).astype(str)
+
+        # Construct color map
+        max_color = max(combined_df['log_total_vaccinations'])
+        min_color = min(combined_df['log_total_vaccinations'])
+        color_map = cm.linear.YlOrRd_09.scale(min_color, max_color)
+        combined_df['color'] = combined_df['log_total_vaccinations'].map(color_map)
+
+        # Construct style dictionary
+        unique_country_list = combined_df['location'].unique().tolist()
+        ctry_index = range(len(unique_country_list))
+
+        style_dic = {}
+        for j in ctry_index:
+            ctry = unique_country_list[j]
+            country = combined_df[combined_df['location'] == ctry]
+            in_dic = {
+
+            }
+            for _, r in country.iterrows():
+                in_dic[r['date']] = {'color': r['color'], 'opacity': 0.8}
+            style_dic[str(j)] = in_dic
+
+        # Make a dataframe containing each country
+        specific_ctry = combined_df[['geometry']]
+        ctry_gdf = gpd.GeoDataFrame(specific_ctry)
+        ctry_gdf = ctry_gdf.drop_duplicates().reset_index()
+
+        # Create a slider map
+        from folium.plugins import TimeSliderChoropleth
+        m = folium.Map(min_zoom=2, max_bounds=True, tiles='cartodbpositron')
+
+        # Plot Slider Map
+        _ = TimeSliderChoropleth(
+            data=ctry_gdf.to_json(),
+            styledict=style_dic,
+        ).add_to(m)
+        _ = color_map.add_to(m)
+        color_map.caption = "Number of COVID 19 Vaccinations in log10 scale"
+
+        m.save("covid19/covid19_cum_stat_map.html")
+        m = m._repr_html_()
+        context = {
+            'm': m
+        }
+        return render(request, 'covid19/covid19_cum_stat_map.html', context)
+
+    elif obtained_feature == "people_vaccinated":
+        if obtained_country == "World":
+            result = Covid19.objects.filter(date__gte=date)
+        else:
+            result = Covid19.objects.filter(Q(date__gte=date) & Q(location=obtained_country))
+        result = result.exclude(location="World").exclude(location="North America").exclude(
+            location="European Union").exclude(location="Asia").exclude(location="South America").exclude(
+            location="Oceania").exclude(location="Africa").exclude(location="Georgia").exclude(location="Chad").exclude(
+            location="Jordan")
+        for m in result:
+            slider_name_list.append(m.location)
+            slider_vac_pop_list.append(m.people_vaccinated)
+            slider_lat_list.append(m.Latitude)
+            slider_lon_list.append(m.Longitude)
+            slider_date_list.append(m.date)
+
+        combined = zip(slider_name_list, slider_vac_pop_list, slider_date_list)
+        slider_combined = list(combined)
+        df_slider = pd.DataFrame(data=slider_combined, columns=['location', 'people_vaccinated', 'date'])
+        df_slider = df_slider[df_slider.people_vaccinated != 0]
+
+        # sorting
+        sorted_df = df_slider.sort_values(['location',
+                                           'date']).reset_index(drop=True)
+
+        # Combine data with the file
+        country = gpd.read_file("/Users/benchiang/Desktop/countries.geojson")
+
+        # Change country name
+        country = country.replace({'ADMIN': 'United States of America'},
+                                  'United States')
+        country = country.rename(columns={'ADMIN': 'location'})
+        combined_df = sorted_df.merge(country, on='location')
+
+        # Use Log to plot the cases
+        combined_df['log_people_vaccinated'] = np.log10(combined_df['people_vaccinated'])
+        combined_df = combined_df[['location', 'log_people_vaccinated', 'date', 'geometry']]
+
+        combined_df['date'] = pd.to_datetime(combined_df['date']).astype(int) / 10 ** 9
+        combined_df['date'] = combined_df['date'].astype(int).astype(str)
+
+        # Construct color map
+        max_color = max(combined_df['log_people_vaccinated'])
+        min_color = min(combined_df['log_people_vaccinated'])
+        color_map = cm.linear.YlOrRd_09.scale(min_color, max_color)
+        combined_df['color'] = combined_df['log_people_vaccinated'].map(color_map)
+
+        # Construct style dictionary
+        unique_country_list = combined_df['location'].unique().tolist()
+        ctry_index = range(len(unique_country_list))
+
+        style_dic = {}
+        for j in ctry_index:
+            ctry = unique_country_list[j]
+            country = combined_df[combined_df['location'] == ctry]
+            in_dic = {
+
+            }
+            for _, r in country.iterrows():
+                in_dic[r['date']] = {'color': r['color'], 'opacity': 0.8}
+            style_dic[str(j)] = in_dic
+
+        # Make a dataframe containing each country
+        specific_ctry = combined_df[['geometry']]
+        ctry_gdf = gpd.GeoDataFrame(specific_ctry)
+        ctry_gdf = ctry_gdf.drop_duplicates().reset_index()
+
+        # Create a slider map
+        from folium.plugins import TimeSliderChoropleth
+        m = folium.Map(min_zoom=2, max_bounds=True, tiles='cartodbpositron')
+
+        # Plot Slider Map
+        _ = TimeSliderChoropleth(
+            data=ctry_gdf.to_json(),
+            styledict=style_dic,
+        ).add_to(m)
+        _ = color_map.add_to(m)
+        color_map.caption = "Number of people vaccinated in log10 scale"
 
         m.save("covid19/covid19_cum_stat_map.html")
         m = m._repr_html_()
