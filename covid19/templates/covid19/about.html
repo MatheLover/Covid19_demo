@@ -1,10 +1,169 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>About</title>
+
+    <!-- Bootstrap CSS file -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="http://cdn.pydata.org/bokeh/release/bokeh-2.2.3.min.css"/>
+    <link rel="stylesheet" type="text/css" href="http://cdn.pydata.org/bokeh/release/bokeh-widgets-2.2.3.min.css"/>
+    <link rel="stylesheet" type="text/css" href="http://cdn.pydata.org/bokeh/release/bokeh-tables-2.2.3.min.css"/>
 </head>
 <body>
+<div class="container-xl">
+    <center>
+        <div class="jumbotron">
+            <h1>COVID-19 Visualization System</h1>
+            <hr>
+            <a href="http://127.0.0.1:8000/covid19/query.html" class="btn btn-info" role="button">Home</a>
+            <a href="http://127.0.0.1:8000/covid19/about.html" class="btn btn-info" role="button">About</a>
+            <a href="http://127.0.0.1:8000/covid19/covid19_map.html" class="btn btn-info" role="button">COVID 19
+                Statistics Mapping</a>
+            <a href="http://127.0.0.1:8000/covid19/covid19_public_health_authority_response.html" class="btn btn-info"
+               role="button">Public Health Authority Response</a>
+            <a href="http://127.0.0.1:8000/covid19/covid19_socioeconomic_factor.html" class="btn btn-info"
+               role="button">Socioeconomic Factor</a>
+            <a href="http://127.0.0.1:8000/covid19/covid19_public_health_statistics.html" class="btn btn-info"
+               role="button">Public Health Statistics</a>
+            <br>
+            <br>
+            <a href="http://127.0.0.1:8000/covid19/covid19_public_health_facility.html" class="btn btn-info"
+               role="button">Public Health Facility </a>
 
+        </div>
+
+
+    </center>
+
+    <div id="contentHolder">
+        <div class="wrapper overflow" id="contentWrapper">
+            <div id="content">
+                <div class="tipHeader fl">
+                    <center>
+                        <h1>About</h1>
+                    </center>
+
+                </div>
+                <div id="list" style="text-align: justify; width:1000px">
+                    This site allows users to make queries about COVID 19 and other relevant data.
+                    The information are from <a href="https://ourworldindata.org" target="_blank"
+                                                style="color: #ffa31a">Our World in Data</a>.
+                    <br><br>
+                    <b>Home</b>
+                    <br>
+                    In Home, users can query COVID 19 disease statistics about their chosen country or region during a
+                    specified
+                    period.
+                    <br><br>
+                    <b>COVID 19 Statistics Mapping</b>
+                    <br>
+                    In COVID 19 Statistics Mapping Section, users can choose either to view daily(on a specific day)
+                    disease statistics or cumulative(during
+                    a period of time) disease statistics upon a real map. In particular, a <a
+                        href="https://en.wikipedia.org/wiki/Choropleth_map" target="_blank" style="color: #ffa31a">choropleth
+                    map</a> with time slider will be generated to visualize
+                    changes in disease statistics over the specified period.
+                    <br><br>
+                    <b>Public Health Authority Response</b>
+                    <br>
+                    In addition, number of COVID 19 tests, vaccinations, and vaccinated population should be evaluated
+                    to assess the
+                    effectiveness of public health authority response.
+                    <br><br>
+                    <b>Social Economic Factor</b>
+                    <br>
+                    Social economic situations may also affect COVID 19. In this section, users are encouraged to
+                    examine the relationship between socio
+                    -economic factors and COVID 19.
+                    The socioeconomic factors include the followings:
+                    <br>
+                    <ol>
+                        <li>Stringency index: A composite indicator
+                            reflecting the scale of
+                            closures (e.g., school,
+                            workplace) ranging from 0
+                            to 100(the higher the value,
+                            the more stringent the
+                            response)
+                        </li>
+                        <li>
+                            Percentage of population
+                            with 65 or above in one
+                            country or region
+                        </li>
+                        <li>
+                            Percentage of population
+                            with 70 or above in one
+                            country or region
+                        </li>
+                        <li>
+                            GDP per capita: Gross Domestic Product per
+                            capita based on 2011 data
+                        </li>
+
+
+                    </ol>
+                    <br><br>
+                    <b>Public Health Statistics</b>
+                    <br>
+                    Health statistics about the overall population may also affect the COVID 19 situation. People with
+                    cardiovascular disease or diabetes are much more likely to get infected with
+                    the COVID 19 virus. In this section, users explore whether countries with more populations suffering
+                    from cardiovascular
+                    diseases or diabetes are under greater COVID 19 threats. The health statistics include the
+                    followings:
+                    <br>
+                    <ol>
+                        <li>
+                            Cardiovascular death rate: Number of deaths per
+                            100,000 on a yearly basis
+                        </li>
+                        <li>
+                            Diabetes prevalence: % of population with
+                            diabetes aged from 20 to 79
+                        </li>
+                    </ol>
+                    <br><br>
+                    <b>Public Health Facility</b>
+                    <br>
+                    Public health facility is likely to influence the severity of COVID 19 in a country or region. In
+                    this section,
+                    users are encounraged to explore whether countries with more health facilities have less severe
+                    COVID 19 situations.
+                    The public health facility category includes the followings:
+                    <br>
+                    <ol>
+                        <li>
+                            Hand-washing Facility:Proportion of population
+                            who can access basic
+                            hand-washing facilities
+                        </li>
+                        <li>
+                            Hospital Beds per Thousand: The number of hospital beds every 1000 people can access
+                        </li>
+                    </ol>
+                    <br><br><br><br>
+
+                </div>
+            </div>
+
+            <div class="clearer"></div>
+        </div>
+        <div class="clearer">
+
+        </div>
+    </div>
+    <!-- JS files: jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</div>
 </body>
+<script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-2.2.3.min.js"></script>
+<script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-widgets-2.2.3.min.js"></script>
+<script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-tables-2.2.3.min.js"></script>
+<script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-api-2.2.3.min.js"></script>
+
 </html>
