@@ -1613,17 +1613,17 @@ def covid19_stringency(request):
         i = 0
         j = 0
         k = 0
-        for cases in query_result.values_list('total_cases'):
+        for cases in query_result.values_list('total_cases',flat=True):
             if i <= counter:
                 cases_list.append(cases)
                 i += 1
 
-        for death in query_result.values_list('total_deaths'):
+        for death in query_result.values_list('total_deaths',flat=True):
             if j <= counter:
                 deaths_list.append(death)
                 j += 1
 
-        for stringency_index in query_result.values_list('stringency_index'):
+        for stringency_index in query_result.values_list('stringency_index',flat=True):
             if k <= counter:
                 stringency_list.append(stringency_index)
                 k += 1
@@ -1708,6 +1708,8 @@ def covid19_stringency(request):
                                      fill_alpha=0.5)
         scatter_plot_case_str.left[0].formatter.use_scientific = False
         scatter_plot_case_str.below[0].formatter.use_scientific = False
+
+
 
         # Best-fit Line
         # d = pandas.DataFrame(x_scatter_str)

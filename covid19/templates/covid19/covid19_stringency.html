@@ -33,11 +33,10 @@
                role="button">Public Health Facility </a>
 
         </div>
-        <h1>Please Use the selector to do a query</h1>
+        <h1>Please Use the selector to understand stringency index and COVID 19 impact</h1>
         <form name="filter" action="{% url 'covid19_stringency' %}" method="get">
             <select id="Location" name="Location">
                 <option disabled="true" selected>Select one country or region</option>
-                <option value="World">World</option>
                 <option value="Afganistan">Afghanistan</option>
                 <option value="Albania">Albania</option>
                 <option value="Algeria">Algeria</option>
@@ -296,7 +295,7 @@
             <input type="submit" value="Submit Query"/>
         </form>
         <hr>
-        {{div_str | safe}}
+<!--        {{div_str | safe}}-->
         <br>
         {{div_plot_case_str | safe}}
         <br>
