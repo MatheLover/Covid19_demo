@@ -1574,17 +1574,18 @@ def covid19_socioeconomic_factor(request):
 
 
 def covid19_stringency(request):
-    if request.GET.get("Location") and request.GET.get("start_date") and request.GET.get("end_date"):
+    if request.GET.get("Location") and request.GET.get("start_date") and request.GET.get("end_date") and request.GET.get("str_lower"):
         country_filter = request.GET.get("Location")
         date_filter = request.GET.get("start_date")
         end_date_filter = request.GET.get("end_date")
+        str_lower = request.GET.get("str_lower")
         processed_date_list = date_filter.split("-")
         end_processed_date_list = end_date_filter.split("-")
         date_ready = datetime.datetime(int(processed_date_list[0]), int(processed_date_list[1]),
                                        int(processed_date_list[2]))
         end_date_ready = datetime.datetime(int(end_processed_date_list[0]), int(end_processed_date_list[1]),
                                            int(end_processed_date_list[2]))
-        query_result = Covid19.objects.filter(Q(location=country_filter) & Q(date__gte=date_filter))
+        query_result = Covid19.objects.filter(Q(location=country_filter) & Q(date__gte=date_filter) & Q(stringency_index__gte=str_lower))
 
         cases_list = []
         deaths_list = []
@@ -1600,9 +1601,10 @@ def covid19_stringency(request):
                                      & Q(date=date_ready)).exists() is False:
             date_ready += dayIncrement
 
+
         index = date_ready
 
-        # Prepare date list
+        #Prepare date list
         while index <= end_date_ready:
             date_list.append(date_ready.isoformat())
             date_ready += dayIncrement
@@ -1627,7 +1629,7 @@ def covid19_stringency(request):
             if k <= counter:
                 stringency_list.append(stringency_index)
                 k += 1
-
+        print(stringency_list)
         # Reformat the dates for plotting
         graph_date_list = []
         for x in range(len(date_list)):
@@ -1690,7 +1692,7 @@ def covid19_stringency(request):
 
         # Plot the line graph for stringency index
         plot_stringency = figure(
-            title="Stringency Index from " + date_filter + " to " + end_date_filter + " in " + country_filter,
+            title="Stringency Index " + date_filter + " to " + " in " + country_filter,
             x_range=month_list, y_range=((0, 10)),
             plot_width=1000,
             plot_height=400)
@@ -1883,11 +1885,11 @@ def covid19_gdp(request):
     if request.GET.get("Location") and request.GET.get("start_date"):
         country_filter = request.GET.get("Location")
         date_filter = request.GET.get("start_date")
-        if country_filter == "World":
-            query_result = Covid19.objects.filter(Q(location="World") & Q(date__gte=date_filter))
+        # if country_filter == "World":
+        #     query_result = Covid19.objects.filter(Q(location="World") & Q(date__gte=date_filter))
 
-        else:
-            query_result = Covid19.objects.filter(Q(continent=country_filter) & Q(date__gte=date_filter))
+        # else:
+        query_result = Covid19.objects.filter(Q(continent=country_filter) & Q(date__gte=date_filter))
 
         cases_list = []
         deaths_list = []
@@ -1917,6 +1919,15 @@ def covid19_gdp(request):
         scatter_plot_gdp_case.below[0].formatter.use_scientific = False
         script_gdp_case, div_gdp_case = components(scatter_plot_gdp_case)
 
+        scatter_plot_gdp_case_bar = figure(plot_width=700, plot_height=700,
+                                       x_axis_label='GDP per capita',
+                                       y_axis_label='Number of COVID 19 Cases in ' + country_filter)
+        scatter_plot_gdp_case_bar.vbar(x_scatter_gdp, width=2,bottom=0,top=y_scatter_cases,color="firebrick")
+        scatter_plot_gdp_case_bar.left[0].formatter.use_scientific = False
+        scatter_plot_gdp_case_bar.below[0].formatter.use_scientific = False
+        script_gdp_case_bar, div_gdp_case_bar = components(scatter_plot_gdp_case_bar)
+
+
         # Plot scatterplot for death vs GDP
         x_scatter_gdp = gdp_list
         y_scatter_deaths = deaths_list
@@ -1930,18 +1941,34 @@ def covid19_gdp(request):
         scatter_plot_gdp_death.below[0].formatter.use_scientific = False
         script_gdp_death, div_gdp_death = components(scatter_plot_gdp_death)
 
+        scatter_plot_gdp_death_bar = figure(plot_width=700, plot_height=700,
+                                        x_axis_label='GDP per capita',
+                                        y_axis_label='Number of COVID 19 Deaths in ' + country_filter)
+        scatter_plot_gdp_death_bar.vbar(x_scatter_gdp, width=0.8,bottom=0,top=y_scatter_deaths,color="firebrick")
+        scatter_plot_gdp_death_bar.left[0].formatter.use_scientific = False
+        scatter_plot_gdp_death_bar.below[0].formatter.use_scientific = False
+        script_gdp_death_bar, div_gdp_death_bar = components(scatter_plot_gdp_death_bar)
+
         # Plot scatterplot for test vs GDP
         x_scatter_gdp = gdp_list
         y_scatter_test = tests_list
 
         scatter_plot_gdp_test = figure(plot_width=700, plot_height=700,
                                        x_axis_label='GDP per capita',
-                                       y_axis_label='Number of COVID 19 Deaths in ' + country_filter)
+                                       y_axis_label='Number of COVID 19 Tests in ' + country_filter)
         scatter_plot_gdp_test.circle(x_scatter_gdp, y_scatter_test, size=10, line_color="navy", fill_color="orange",
                                      fill_alpha=0.5)
         scatter_plot_gdp_test.left[0].formatter.use_scientific = False
         scatter_plot_gdp_test.below[0].formatter.use_scientific = False
         script_gdp_test, div_gdp_test = components(scatter_plot_gdp_test)
+
+        scatter_plot_gdp_test_bar = figure(plot_width=700, plot_height=700,
+                                       x_axis_label='GDP per capita',
+                                       y_axis_label='Number of COVID 19 Tests in ' + country_filter)
+        scatter_plot_gdp_test_bar.vbar(x_scatter_gdp, width=2, bottom=0,top=y_scatter_test,color="firebrick")
+        scatter_plot_gdp_test_bar.left[0].formatter.use_scientific = False
+        scatter_plot_gdp_test_bar.below[0].formatter.use_scientific = False
+        script_gdp_test_bar, div_gdp_test_bar = components(scatter_plot_gdp_test_bar)
 
         # Plot scatterplot for number of people vaccinated vs GDP
         x_scatter_gdp = gdp_list
@@ -1957,6 +1984,15 @@ def covid19_gdp(request):
         scatter_plot_gdp_vac_pop.below[0].formatter.use_scientific = False
         script_gdp_vac_pop, div_gdp_vac_pop = components(scatter_plot_gdp_vac_pop)
 
+        scatter_plot_gdp_vac_pop_bar = figure(plot_width=700, plot_height=700,
+                                          x_axis_label='GDP per capita',
+                                          y_axis_label='Number of vaccinated people in ' + country_filter)
+        scatter_plot_gdp_vac_pop_bar.vbar(x_scatter_gdp, width=2, bottom=0,top=y_scatter_vac_people,color="firebrick")
+        scatter_plot_gdp_vac_pop_bar.left[0].formatter.use_scientific = False
+        scatter_plot_gdp_vac_pop_bar.below[0].formatter.use_scientific = False
+        script_gdp_vac_pop_bar, div_gdp_vac_pop_bar = components(scatter_plot_gdp_vac_pop_bar)
+
+
         # Plot scatterplot for number of total vaccinations vs GDP
         x_scatter_gdp = gdp_list
         y_scatter_vac = vac_list
@@ -1971,11 +2007,28 @@ def covid19_gdp(request):
         scatter_plot_gdp_vac.below[0].formatter.use_scientific = False
         script_gdp_vac, div_gdp_vac = components(scatter_plot_gdp_vac)
 
+        scatter_plot_gdp_vac_bar = figure(plot_width=700, plot_height=700,
+                                      x_axis_label='GDP per capita',
+                                      y_axis_label='Number of total vaccinations in ' + country_filter)
+        scatter_plot_gdp_vac_bar.vbar(x_scatter_gdp, width=2, bottom=0, top=y_scatter_vac,color="firebrick")
+        scatter_plot_gdp_vac_bar.left[0].formatter.use_scientific = False
+        scatter_plot_gdp_vac_bar.below[0].formatter.use_scientific = False
+        script_gdp_vac_bar, div_gdp_vac_bar = components(scatter_plot_gdp_vac_bar)
+
+
+
+
         context = {'Covid19': query_result, 'script_gdp_case': script_gdp_case, 'div_gdp_case': div_gdp_case,
                    'script_gdp_death': script_gdp_death, 'div_gdp_death': div_gdp_death,
                    'script_gdp_test': script_gdp_test, 'div_gdp_test': div_gdp_test,
                    'script_gdp_vac_pop': script_gdp_vac_pop, 'div_gdp_vac_pop': div_gdp_vac_pop,
-                   'script_gdp_vac': script_gdp_vac, 'div_gdp_vac': div_gdp_vac}
+                   'script_gdp_vac': script_gdp_vac, 'div_gdp_vac': div_gdp_vac,
+                   'script_gdp_case_bar': script_gdp_case_bar, 'div_gdp_case_bar': div_gdp_case_bar,
+                   'script_gdp_death_bar': script_gdp_death_bar, 'div_gdp_death_bar': div_gdp_death_bar,
+                   'script_gdp_test_bar': script_gdp_test_bar, 'div_gdp_test_bar': div_gdp_test_bar,
+                   'script_gdp_vac_pop_bar': script_gdp_vac_pop_bar, 'div_gdp_vac_pop_bar': div_gdp_vac_pop_bar,
+                   'script_gdp_vac_bar': script_gdp_vac_bar, 'div_gdp_vac_bar': div_gdp_vac_bar
+                   }
 
         return render(request, 'covid19/covid19_gdp.html', context)
     return render(request, 'covid19/covid19_gdp.html')
