@@ -18,6 +18,8 @@ import pandas as pd
 import branca.colormap as cm
 import geopandas as gpd
 import numpy as np
+from sklearn.metrics import r2_score
+
 
 
 def query(request):
@@ -157,7 +159,6 @@ def query(request):
                        x_range=month_list,
                        plot_width=1000,
                        plot_height=400)
-
         plot2.vbar(graph_date_list, width=0.5, bottom=0, top=cases_list, color="firebrick")
         plot2.left[0].formatter.use_scientific = False
 
@@ -188,7 +189,7 @@ def query(request):
                        plot_width=800, plot_height=400)
         plot5.left[0].formatter.use_scientific = False
         # lot3.line(graph_date_list, deaths_list, line_width=2)
-        plot5.vbar(graph_date_list, width=0.5, bottom=0, top=rep_list, color="firebrick")
+        plot5.vbar(graph_date_list, width=0.5, bottom=0, top=icu_list, color="firebrick")
         script5, div5 = components(plot5)
 
         # Plot number of COVID 19 patients admitted into hospitals
@@ -198,7 +199,7 @@ def query(request):
             plot_width=800, plot_height=400)
         plot6.left[0].formatter.use_scientific = False
         # lot3.line(graph_date_list, deaths_list, line_width=2)
-        plot6.vbar(graph_date_list, width=0.5, bottom=0, top=rep_list, color="firebrick")
+        plot6.vbar(graph_date_list, width=0.5, bottom=0, top=hosp_list, color="firebrick")
         script6, div6 = components(plot6)
 
         context = {'Covid19': query_result, 'script2': script2, 'div2': div2, 'script3': script3, 'div3': div3,
@@ -1249,7 +1250,7 @@ def covid19_public_health_test_stat(request):
         month_list = ["2020/01", "2020/02", "2020/03", "2020/04", "2020/05", "2020/06", "2020/07",
                       "2020/08", "2020/09", "2020/10", "2020/11", "2020/12",
                       "2021/01", "2021/02", "2021/03", "2021/04"]
-        plot2 = figure(title="Number of Total cases from " + date_filter + " to " + end_date_filter,
+        plot2 = figure(title="Number of Total cases from " + date_filter + " to " + end_date_filter + " in " + country_filter,
                        x_range=month_list,
                        plot_width=1000,
                        plot_height=400)
@@ -1259,7 +1260,7 @@ def covid19_public_health_test_stat(request):
         script2, div2 = components(plot2)
 
         # Plot the graph of total tests
-        plot3 = figure(title="Number of Total tests from " + date_filter + " to " + end_date_filter,
+        plot3 = figure(title="Number of total tests from " + date_filter + " to " + end_date_filter + " in " + country_filter,
                        x_range=month_list,
                        plot_width=1000,
                        plot_height=400)
@@ -1291,8 +1292,12 @@ def covid19_public_health_test_stat(request):
         scatter_plot_1.line(x, y_predicted_pop, color='red')
         script_test_case, div_test_case = components(scatter_plot_1)
 
+        # R^2
+        r2_value = r2_score(y,y_predicted_pop)
+
         context = {'Covid19': query_result, 'script2': script2, 'div2': div2, 'script3': script3, 'div3': div3,
-                   'script_test_case': script_test_case, 'div_test_case': div_test_case}
+                   'script_test_case': script_test_case, 'div_test_case': div_test_case,
+                   'r2_value':r2_value}
 
         return render(request, 'covid19/covid19_public_health_test_stat.html', context)
 
@@ -1474,6 +1479,7 @@ def covid19_public_health_vac_stat(request):
         y_predicted_pop = [slope * i + intercept for i in x]
         scatter_plot_1.line(x, y_predicted_pop, color='red')
         script_vac_pop_death, div_vac_pop_death = components(scatter_plot_1)
+        r2_1 =r2_score(y,y_predicted_pop)
 
         # Plot the scatter plot for number of deaths vs the number of total vaccinations
         x_scatter_vac = vac_list
@@ -1498,6 +1504,7 @@ def covid19_public_health_vac_stat(request):
         y_predicted_pop = [slope * i + intercept for i in x]
         scatter_plot_2.line(x, y_predicted_pop, color='red')
         script_vac_death, div_vac_death = components(scatter_plot_2)
+        r2_2 = r2_score(y,y_predicted_pop)
 
         # Plot the scatter plot for number of cases vs the number of people vaccinated
         x_scatter_vac_pop = vac_pop_list
@@ -1522,6 +1529,7 @@ def covid19_public_health_vac_stat(request):
         y_predicted_pop = [slope * i + intercept for i in x]
         scatter_plot_3.line(x, y_predicted_pop, color='red')
         script_vac_pop_case, div_vac_pop_case = components(scatter_plot_3)
+        r2_3 = r2_score(y,y_predicted_pop)
 
         # Plot the scatter plot for number of cases vs the number of total vaccinations
         x_scatter_vac = vac_list
@@ -1545,6 +1553,7 @@ def covid19_public_health_vac_stat(request):
         intercept = par[0][1]
         y_predicted_pop = [slope * i + intercept for i in x]
         scatter_plot_4.line(x, y_predicted_pop, color='red')
+        r2_4 = r2_score(y,y_predicted_pop)
         script_vac_case, div_vac_case = components(scatter_plot_4)
 
         context = {'Covid19': query_result, 'script4': script4, 'div4': div4, 'script2': script2, 'div2': div2,
@@ -1552,7 +1561,8 @@ def covid19_public_health_vac_stat(request):
                    'script_vac_pop_death': script_vac_pop_death, 'div_vac_pop_death': div_vac_pop_death
             , 'script_vac_death': script_vac_death, 'div_vac_death': div_vac_death,
                    'script_vac_pop_case': script_vac_pop_case, 'div_vac_pop_case': div_vac_pop_case,
-                   'script_vac_case': script_vac_case, 'div_vac_case': div_vac_case}
+                   'script_vac_case': script_vac_case, 'div_vac_case': div_vac_case,
+                   'r2_1':r2_1, 'r2_2':r2_2, 'r2_3':r2_3, 'r2_4':r2_4}
 
         return render(request, 'covid19/covid19_public_health_vac_stat.html', context)
 
