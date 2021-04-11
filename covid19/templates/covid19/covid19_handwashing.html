@@ -33,11 +33,10 @@
                role="button">Public Health Facility </a>
 
         </div>
-        <h1>Please Use the selector to do a query</h1>
+        <h1>Please Use the selector to understand hand-washing facility and COVID 19 impact</h1>
         <form name="filter" action="{% url 'covid19_handwashing' %}" method="get">
             <select id="Location" name="Location">
-                <option disabled="true" selected>Select world or a continent</option>
-                <option value="World">World</option>
+                <option disabled="true" selected>Select a continent</option>
                 <option value="Asia">Asia</option>
                 <option value="North America">North America</option>
                 <option value="South America">South America</option>
@@ -47,7 +46,7 @@
             </select>
             <label for="start_date">Start Date(at least from 2020-01-01):</label>
             <input type="date" id="start_date" name="start_date"
-                   min="2020-01-01" max="2021-1-1">
+                   min="2020-01-01" max="2021-3-15">
 
 
             <br><br>

@@ -2238,8 +2238,9 @@ def covid19_handwashing(request):
         scatter_plot_wash_case = figure(plot_width=700, plot_height=700,
                                         x_axis_label='Share of population with basic handwashing facilities',
                                         y_axis_label='Number of COVID 19 cases in ' + country_filter)
-        scatter_plot_wash_case.circle(x_scatter_wash, y_scatter_cases, size=10, line_color="navy", fill_color="orange",
-                                      fill_alpha=0.5)
+        # scatter_plot_wash_case.circle(x_scatter_wash, y_scatter_cases, size=10, line_color="navy", fill_color="orange",
+        #                               fill_alpha=0.5)
+        scatter_plot_wash_case.vbar(x_scatter_wash, width=0.8, bottom=0, top=y_scatter_cases, color="blue")
         scatter_plot_wash_case.left[0].formatter.use_scientific = False
         scatter_plot_wash_case.below[0].formatter.use_scientific = False
         script_wash_case, div_wash_case = components(scatter_plot_wash_case)
@@ -2251,9 +2252,10 @@ def covid19_handwashing(request):
         scatter_plot_wash_death = figure(plot_width=700, plot_height=700,
                                          x_axis_label='Share of population with basic handwashing facilities',
                                          y_axis_label='Number of COVID 19 deaths in ' + country_filter)
-        scatter_plot_wash_death.circle(x_scatter_wash, y_scatter_deaths, size=10, line_color="navy",
-                                       fill_color="orange",
-                                       fill_alpha=0.5)
+        # scatter_plot_wash_death.circle(x_scatter_wash, y_scatter_deaths, size=10, line_color="navy",
+        #                                fill_color="orange",
+        #                                fill_alpha=0.5)
+        scatter_plot_wash_death.vbar(x_scatter_wash, width=0.8, bottom=0,top=y_scatter_deaths, color="red")
         scatter_plot_wash_death.left[0].formatter.use_scientific = False
         scatter_plot_wash_death.below[0].formatter.use_scientific = False
         script_wash_death, div_wash_death = components(scatter_plot_wash_death)
@@ -2294,9 +2296,10 @@ def covid19_hospital_beds(request):
         scatter_plot_bed_case = figure(plot_width=700, plot_height=700,
                                        x_axis_label='Hospital beds per thousand',
                                        y_axis_label='Number of COVID 19 cases in ' + country_filter)
-        scatter_plot_bed_case.circle(x_scatter_hosp_bed, y_scatter_cases, size=10, line_color="navy",
-                                     fill_color="orange",
-                                     fill_alpha=0.5)
+        # scatter_plot_bed_case.circle(x_scatter_hosp_bed, y_scatter_cases, size=10, line_color="navy",
+        #                              fill_color="orange",
+        #                              fill_alpha=0.5)
+        scatter_plot_bed_case.vbar(x_scatter_hosp_bed, width=0.3, bottom=0, top=y_scatter_cases, color="blue")
         scatter_plot_bed_case.left[0].formatter.use_scientific = False
         scatter_plot_bed_case.below[0].formatter.use_scientific = False
         script_bed_case, div_bed_case = components(scatter_plot_bed_case)
@@ -2308,9 +2311,10 @@ def covid19_hospital_beds(request):
         scatter_plot_bed_death = figure(plot_width=700, plot_height=700,
                                         x_axis_label='Hospital beds per thousand',
                                         y_axis_label='Number of COVID 19 deaths in ' + country_filter)
-        scatter_plot_bed_death.circle(x_scatter_hosp_bed, y_scatter_deaths, size=10, line_color="navy",
-                                      fill_color="orange",
-                                      fill_alpha=0.5)
+        # scatter_plot_bed_death.circle(x_scatter_hosp_bed, y_scatter_deaths, size=10, line_color="navy",
+        #                               fill_color="orange",
+        #                               fill_alpha=0.5)
+        scatter_plot_bed_death.vbar(x_scatter_hosp_bed, width=0.3, bottom=0, top=y_scatter_deaths, color="orange")
         scatter_plot_bed_death.left[0].formatter.use_scientific = False
         scatter_plot_bed_death.below[0].formatter.use_scientific = False
         script_bed_death, div_bed_death = components(scatter_plot_bed_death)
@@ -2322,9 +2326,10 @@ def covid19_hospital_beds(request):
         scatter_plot_bed_icu = figure(plot_width=700, plot_height=700,
                                       x_axis_label='Hospital beds per thousand',
                                       y_axis_label='Number of COVID 19 patients admitted to ICU in ' + country_filter)
-        scatter_plot_bed_icu.circle(x_scatter_hosp_bed, y_scatter_icu, size=10, line_color="navy",
-                                    fill_color="orange",
-                                    fill_alpha=0.5)
+        # scatter_plot_bed_icu.circle(x_scatter_hosp_bed, y_scatter_icu, size=10, line_color="navy",
+        #                             fill_color="orange",
+        #                             fill_alpha=0.5)
+        scatter_plot_bed_icu.vbar(x_scatter_hosp_bed, width=0.3,bottom=0,top=y_scatter_icu,color="red")
         scatter_plot_bed_icu.left[0].formatter.use_scientific = False
         scatter_plot_bed_icu.below[0].formatter.use_scientific = False
         script_bed_icu, div_bed_icu = components(scatter_plot_bed_icu)
@@ -2336,9 +2341,10 @@ def covid19_hospital_beds(request):
         scatter_plot_bed_hos = figure(plot_width=700, plot_height=700,
                                       x_axis_label='Hospital beds per thousand',
                                       y_axis_label='Number of COVID 19 patients admitted to ICU in ' + country_filter)
-        scatter_plot_bed_hos.circle(x_scatter_hosp_bed, y_scatter_hos, size=10, line_color="navy",
-                                    fill_color="orange",
-                                    fill_alpha=0.5)
+        # scatter_plot_bed_hos.circle(x_scatter_hosp_bed, y_scatter_hos, size=10, line_color="navy",
+        #                             fill_color="orange",
+        #                             fill_alpha=0.5)
+        scatter_plot_bed_hos.vbar(x_scatter_hosp_bed, width=0.3, bottom=0, top=y_scatter_hos,color="black")
         scatter_plot_bed_hos.left[0].formatter.use_scientific = False
         scatter_plot_bed_hos.below[0].formatter.use_scientific = False
         script_bed_hos, div_bed_hos = components(scatter_plot_bed_hos)
