@@ -2085,7 +2085,7 @@ def covid19_cardiovascular_death_rate(request):
                                    fill_alpha=0.5)
         scatter_plot_70_car.left[0].formatter.use_scientific = False
         scatter_plot_70_car.below[0].formatter.use_scientific = False
-        script_70_car, div_70_car = components(scatter_plot_65_car)
+        script_70_car, div_70_car = components(scatter_plot_70_car)
 
         # Plot scatter plot for cases vs cardiovascular death rate
         x_scatter_car = cardiovasc_death_rate_list
@@ -2094,8 +2094,9 @@ def covid19_cardiovascular_death_rate(request):
         scatter_plot_case_car = figure(plot_width=700, plot_height=700,
                                        x_axis_label='Cardiovascular death rate',
                                        y_axis_label='Number of COVID 19 cases in ' + country_filter)
-        scatter_plot_case_car.circle(x_scatter_car, y_scatter_case, size=10, line_color="navy", fill_color="orange",
-                                     fill_alpha=0.5)
+        # scatter_plot_case_car.circle(x_scatter_car, y_scatter_case, size=10, line_color="navy", fill_color="orange",
+        #                              fill_alpha=0.5)
+        scatter_plot_case_car.vbar(x_scatter_car, width=0.8,bottom=0, top=y_scatter_case, color="blue")
         scatter_plot_case_car.left[0].formatter.use_scientific = False
         scatter_plot_case_car.below[0].formatter.use_scientific = False
         script_case_car, div_case_car = components(scatter_plot_case_car)
@@ -2107,8 +2108,9 @@ def covid19_cardiovascular_death_rate(request):
         scatter_plot_death_car = figure(plot_width=700, plot_height=700,
                                         x_axis_label='Cardiovascular death rate',
                                         y_axis_label='Number of COVID 19 cases in ' + country_filter)
-        scatter_plot_death_car.circle(x_scatter_car, y_scatter_death, size=10, line_color="navy", fill_color="orange",
-                                      fill_alpha=0.5)
+        # scatter_plot_death_car.circle(x_scatter_car, y_scatter_death, size=10, line_color="navy", fill_color="orange",
+        #                               fill_alpha=0.5)
+        scatter_plot_death_car.vbar(x_scatter_car,width=0.8,bottom=0,top=y_scatter_death,color="firebrick")
         scatter_plot_death_car.left[0].formatter.use_scientific = False
         scatter_plot_death_car.below[0].formatter.use_scientific = False
         script_death_car, div_death_car = components(scatter_plot_death_car)
@@ -2177,8 +2179,9 @@ def covid19_diabetes_prevalence(request):
         scatter_plot_prev_car = figure(plot_width=700, plot_height=700,
                                        x_axis_label='Diabetes prevalence rate',
                                        y_axis_label='Number of COVID 19 cases in ' + country_filter)
-        scatter_plot_prev_car.circle(x_scatter_prev, y_scatter_case, size=10, line_color="navy", fill_color="orange",
-                                     fill_alpha=0.5)
+        # scatter_plot_prev_car.circle(x_scatter_prev, y_scatter_case, size=10, line_color="navy", fill_color="orange",
+        #                              fill_alpha=0.5)
+        scatter_plot_prev_car.vbar(x_scatter_prev, width=0.3, bottom=0, top=y_scatter_case, color="blue")
         scatter_plot_prev_car.left[0].formatter.use_scientific = False
         scatter_plot_prev_car.below[0].formatter.use_scientific = False
         script_prev_car, div_prev_car = components(scatter_plot_prev_car)
@@ -2189,9 +2192,10 @@ def covid19_diabetes_prevalence(request):
 
         scatter_plot_death_prev = figure(plot_width=700, plot_height=700,
                                          x_axis_label='Diabetes prevalence rate',
-                                         y_axis_label='Number of COVID 19 cases in ' + country_filter)
-        scatter_plot_death_prev.circle(x_scatter_prev, y_scatter_death, size=10, line_color="navy", fill_color="orange",
-                                       fill_alpha=0.5)
+                                         y_axis_label='Number of COVID 19 deaths in ' + country_filter)
+        # scatter_plot_death_prev.circle(x_scatter_prev, y_scatter_death, size=10, line_color="navy", fill_color="orange",
+        #                                fill_alpha=0.5)
+        scatter_plot_death_prev.vbar(x_scatter_prev, width=0.3, bottom=0, top=y_scatter_death, color="red")
         scatter_plot_death_prev.left[0].formatter.use_scientific = False
         scatter_plot_death_prev.below[0].formatter.use_scientific = False
         script_death_prev, div_death_prev = components(scatter_plot_death_prev)
