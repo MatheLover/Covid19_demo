@@ -53,6 +53,23 @@
             <input type="submit" value="Submit Query"/>
         </form>
         <hr>
+        <table border="1">
+            <tr>
+                <td>Continent</td>
+                <td>Country</td>
+                <td>Percentage of population aged 65 or above</td>
+                <td>Percentage of population aged 70 or above</td>
+
+            </tr>
+            {% for query_result_table in Covid19 %}
+            <tr>
+                <td>{{query_result_table.continent}}</td>
+                <td>{{query_result_table.location}}</td>
+                <td>{{query_result_table.aged_65_older}}</td>
+                <td>{{query_result_table.aged_70_older}}</td>
+            </tr>
+            {% endfor %}
+        </table>
         {{div_65_case | safe}}
         <br>
         {{div_65_case_bar | safe}}

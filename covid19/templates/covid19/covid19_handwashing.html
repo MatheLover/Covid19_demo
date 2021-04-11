@@ -53,6 +53,21 @@
             <input type="submit" value="Submit Query"/>
         </form>
         <hr>
+        <table border="1">
+            <tr>
+                <td>Continent</td>
+                <td>Country</td>
+                <td>Share of population who can access basic hand-washing facility</td>
+
+            </tr>
+            {% for query_result_table in Covid19 %}
+            <tr>
+                <td>{{query_result_table.continent}}</td>
+                <td>{{query_result_table.location}}</td>
+                <td>{{query_result_table.handwashing_facilities}}</td>
+            </tr>
+            {% endfor %}
+        </table>
         {{div_wash_case | safe}}
         <br>
         {{div_wash_death | safe }}

@@ -1764,7 +1764,7 @@ def covid19_aged_pop_stat(request):
     if request.GET.get("Location") and request.GET.get("start_date"):
         country_filter = request.GET.get("Location")
         date_filter = request.GET.get("start_date")
-        query_result = Covid19.objects.filter(Q(continent=country_filter) & Q(date=date_filter))
+        query_result = Covid19.objects.filter(Q(continent=country_filter) & Q(date__gte=date_filter))
 
         cases_list = []
         deaths_list = []
@@ -1863,12 +1863,13 @@ def covid19_aged_pop_stat(request):
         scatter_plot_death_70_bar = figure(plot_width=700, plot_height=700,
                                        x_axis_label='Proportion of population aged 65 or above',
                                        y_axis_label='Number of COVID 19 Deaths in ' + country_filter)
-        scatter_plot_death_70_bar.vbar(x_scatter_pop_70,width=0.8, bottom=0,top=y_scatter_deaths,color="yellow")
+        scatter_plot_death_70_bar.vbar(x_scatter_pop_70,width=0.8, bottom=0,top=y_scatter_deaths,color="orange")
         scatter_plot_death_70_bar.left[0].formatter.use_scientific = False
         scatter_plot_death_70_bar.below[0].formatter.use_scientific = False
         script_70_death_bar, div_70_death_bar = components(scatter_plot_death_70_bar)
 
-        context = {'Covid19': query_result, 'script_65_case': script_65_case
+        query_result_table = query_result.filter(date="2021-03-15").order_by('aged_65_older','aged_70_older')
+        context = {'Covid19': query_result_table, 'script_65_case': script_65_case
             , 'div_65_case': div_65_case, 'script_65_death': script_65_death, 'div_65_death': div_65_death,
                    'script_70_case': script_70_case, 'div_70_case': div_70_case,
                    'script_70_death': script_70_death, 'div_70_death': div_70_death,
@@ -2017,8 +2018,8 @@ def covid19_gdp(request):
 
 
 
-
-        context = {'Covid19': query_result, 'script_gdp_case': script_gdp_case, 'div_gdp_case': div_gdp_case,
+        query_result_table = query_result.filter(date="2021-03-15").order_by('-gdp_per_capita')
+        context = {'Covid19': query_result_table, 'script_gdp_case': script_gdp_case, 'div_gdp_case': div_gdp_case,
                    'script_gdp_death': script_gdp_death, 'div_gdp_death': div_gdp_death,
                    'script_gdp_test': script_gdp_test, 'div_gdp_test': div_gdp_test,
                    'script_gdp_vac_pop': script_gdp_vac_pop, 'div_gdp_vac_pop': div_gdp_vac_pop,
@@ -2115,7 +2116,8 @@ def covid19_cardiovascular_death_rate(request):
         scatter_plot_death_car.below[0].formatter.use_scientific = False
         script_death_car, div_death_car = components(scatter_plot_death_car)
 
-        context = {'Covid19': query_result, 'script_65_car': script_65_car, 'div_65_car': div_65_car,
+        query_result_table = query_result.filter(date="2021-03-15").order_by('-cardiovasc_death_rate')
+        context = {'Covid19': query_result_table, 'script_65_car': script_65_car, 'div_65_car': div_65_car,
                    'script_70_car': script_70_car, 'div_70_car': div_70_car,
                    'script_case_car': script_case_car, 'div_case_car': div_case_car,
                    'script_death_car': script_death_car, 'div_death_car': div_death_car}
@@ -2200,7 +2202,8 @@ def covid19_diabetes_prevalence(request):
         scatter_plot_death_prev.below[0].formatter.use_scientific = False
         script_death_prev, div_death_prev = components(scatter_plot_death_prev)
 
-        context = {'Covid19': query_result, 'script_65_prev': script_65_prev, 'div_65_prev': div_65_prev,
+        query_result_table = query_result.filter(date="2021-03-15").order_by('-diabetes_prevalence')
+        context = {'Covid19': query_result_table, 'script_65_prev': script_65_prev, 'div_65_prev': div_65_prev,
                    'script_70_prev': script_70_prev, 'div_70_prev': div_70_prev,
                    'script_prev_car': script_prev_car, 'div_prev_car': div_prev_car,
                    'script_death_prev': script_death_prev, 'div_death_prev': div_death_prev}
@@ -2260,7 +2263,8 @@ def covid19_handwashing(request):
         scatter_plot_wash_death.below[0].formatter.use_scientific = False
         script_wash_death, div_wash_death = components(scatter_plot_wash_death)
 
-        context = {'Covid19': query_result, 'script_wash_case': script_wash_case, 'div_wash_case': div_wash_case,
+        query_result_table = query_result.filter(date="2021-03-15").order_by('-handwashing_facilities')
+        context = {'Covid19': query_result_table, 'script_wash_case': script_wash_case, 'div_wash_case': div_wash_case,
                    'script_wash_death': script_wash_death, 'div_wash_death': div_wash_death}
         return render(request, 'covid19/covid19_handwashing.html', context)
     return render(request, 'covid19/covid19_handwashing.html')
@@ -2350,8 +2354,8 @@ def covid19_hospital_beds(request):
         script_bed_hos, div_bed_hos = components(scatter_plot_bed_hos)
 
 
-
-        context = {'Covid19': query_result, 'script_bed_case': script_bed_case, 'div_bed_case': div_bed_case,
+        query_result_table = query_result.filter(date="2021-03-15").order_by('-hospital_beds_per_thousand')
+        context = {'Covid19': query_result_table, 'script_bed_case': script_bed_case, 'div_bed_case': div_bed_case,
                    'script_bed_death': script_bed_death, 'div_bed_death': div_bed_death,
                    'script_bed_icu': script_bed_icu, 'div_bed_icu': div_bed_icu,
                    'script_bed_hos': script_bed_hos, 'div_bed_hos': div_bed_hos}

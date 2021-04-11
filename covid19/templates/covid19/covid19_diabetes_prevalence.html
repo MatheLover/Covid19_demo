@@ -53,6 +53,21 @@
             <input type="submit" value="Submit Query"/>
         </form>
         <hr>
+        <table border="1">
+            <tr>
+                <td>Continent</td>
+                <td>Country</td>
+                <td>Diabetes Prevalence</td>
+
+            </tr>
+            {% for query_result_table in Covid19 %}
+            <tr>
+                <td>{{query_result_table.continent}}</td>
+                <td>{{query_result_table.location}}</td>
+                <td>{{query_result_table.diabetes_prevalence}}</td>
+            </tr>
+            {% endfor %}
+        </table>
         {{div_65_prev | safe}}
         <br>
         {{div_70_prev | safe}}
