@@ -302,16 +302,24 @@
         {{div2 | safe}}
         <br>
         {{div_vac_pop_death | safe }}
+        {% if r2_1 != null %}
         The coefficient of determination is {{ r2_1 }}
+        {% endif %}
         <br><br>
         {{div_vac_death | safe }}
+        {% if r2_2 != null %}
         The coefficient of determination is {{ r2_2 }}
+        {% endif %}
         <br><br>
         {{ div_vac_pop_case | safe }}
+        {% if r2_3 != null %}
         The coefficient of determination is {{ r2_3 }}
+        {% endif %}
         <br><br>
         {{ div_vac_case | safe }}
+        {% if r2_4 != null %}
         The coefficient of determination is {{ r2_4 }}
+        {% endif %}
         <br><br>
 
 
