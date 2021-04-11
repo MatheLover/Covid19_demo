@@ -2349,6 +2349,8 @@ def covid19_hospital_beds(request):
         scatter_plot_bed_hos.below[0].formatter.use_scientific = False
         script_bed_hos, div_bed_hos = components(scatter_plot_bed_hos)
 
+
+
         context = {'Covid19': query_result, 'script_bed_case': script_bed_case, 'div_bed_case': div_bed_case,
                    'script_bed_death': script_bed_death, 'div_bed_death': div_bed_death,
                    'script_bed_icu': script_bed_icu, 'div_bed_icu': div_bed_icu,
