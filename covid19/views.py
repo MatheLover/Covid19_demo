@@ -1152,7 +1152,8 @@ def covid19_public_health_test_stat(request):
                                        int(processed_date_list[2]))
         end_date_ready = datetime.datetime(int(end_processed_date_list[0]), int(end_processed_date_list[1]),
                                            int(end_processed_date_list[2]))
-        query_result = Covid19.objects.filter(Q(location=country_filter) & Q(date__gte=date_filter))
+        query_result = Covid19.objects.filter(Q(location=country_filter) & Q(date__gte=date_filter)
+                                              & ~Q(total_cases=0) & ~Q(total_tests=0))
 
         cases_list = []
         test_list = []
@@ -1315,7 +1316,9 @@ def covid19_public_health_vac_stat(request):
                                        int(processed_date_list[2]))
         end_date_ready = datetime.datetime(int(end_processed_date_list[0]), int(end_processed_date_list[1]),
                                            int(end_processed_date_list[2]))
-        query_result = Covid19.objects.filter(Q(location=country_filter) & Q(date__gte=date_filter))
+        query_result = Covid19.objects.filter(Q(location=country_filter) & Q(date__gte=date_filter)
+                                              & ~Q(total_vaccinations=0) & ~Q(people_vaccinated=0)
+                                              & ~Q(total_deaths=0) & ~Q(total_cases=0))
 
         cases_list = []
         deaths_list = []
