@@ -383,6 +383,8 @@ def covid19_cum_stat_map(request):
         slider_combined = list(combined)
         df_slider = pd.DataFrame(data=slider_combined, columns=['location', 'total_cases', 'date'])
         df_slider = df_slider[df_slider.total_cases != 0]
+        #df_slider['total_cases'] = df_slider['total_cases'].diff()
+
 
         # sorting
         sorted_df = df_slider.sort_values(['location',
